@@ -4,8 +4,8 @@
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import dotenv from 'dotenv';
-import test from 'node:test';
-import redline from 'readline';
+import axios from 'axios';
+import fs from 'fs';
 
 //##proprietaries##
 import { OCTOKIT } from './Metrics.js';
@@ -21,6 +21,36 @@ import { exit } from 'process';
 
 
 dotenv.config();
+
+async function getGithubUrlFromNpm(npmUrl: string): Promise<string | null> {
+    try {
+        // Extract package name from npm URL
+        const packageName = npmUrl.split('/').pop();
+        if (!packageName) return null;
+
+        // Fetch package details from npm registry
+        const npmApiUrl = `https://registry.npmjs.org/${packageName}`;
+        const response = await axios.get(npmApiUrl);
+
+        // Check if the package has a repository field
+        const repoUrl = response.data.repository?.url;
+        if (repoUrl && repoUrl.includes('github.com')) {
+            // Normalize the URL (remove 'git+', 'ssh://git@', and '.git' if present)
+            console.log(`Found GitHub URL for ${npmUrl}: ${repoUrl}`);
+            let normalizedUrl = repoUrl.replace(/^git\+/, '').replace(/^ssh:\/\/git@github.com/, 'https://github.com/').replace(/\.git$/, '');
+            return normalizedUrl;
+        } else {
+            return null;
+        }
+    } catch (error) {
+        console.error(`Error fetching GitHub URL for ${npmUrl}:`, error);
+        return null;
+    }
+}
+
+
+
+
 
 /**
  * Displays the usage information for the CLI.
@@ -84,10 +114,33 @@ async function runTests() {
     console.log('\x1b[1;34mTests complete\x1b[0m');
 }
 
-// Placeholder function for processing URLs
-function processUrls(urlFile: string) {
-    console.log(`Processing URLs from file: ${urlFile}`);
-    // Implement URL processing logic here
+async function processUrls(filePath: string): Promise<void> {
+    const urls: string[] = fs.readFileSync(filePath, 'utf-8').split('\n');
+    const githubUrls: string[] = [];
+
+    for (const url of urls) {
+        if (url.includes('github.com')) {
+            // If it's already a GitHub URL, add it to the list
+            githubUrls.push(url);
+        } else if (url.includes('npmjs.com')) {
+            // If it's an npm URL, try to get the GitHub URL
+            const githubUrl = await getGithubUrlFromNpm(url);
+            if (githubUrl) {
+                githubUrls.push(githubUrl);
+            }
+        }
+    }
+
+    // print the github urls
+    console.log('GitHub URLs:');
+    console.log(githubUrls);
+
+    // // Process each GitHub URL
+    // for (const url of githubUrls) {
+    //     const netScore = new NetScore(url);
+    //     const result = await netScore.evaluate();
+    //     console.log(netScore.toString());
+    // }
 }
 
 /**
