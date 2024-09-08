@@ -397,10 +397,10 @@ class Maintainability extends Metrics {
         try {
             // Fetch the most recent 100 issues for the repository
             const { data: issues } = await this.octokit.issues.listForRepo({
-                owner: owner, // Replace with the repository owner
-                repo: repo,   // Replace with the repository name
+                owner: owner,
+                repo: repo,
                 state: "all",      // Fetch both open and closed issues
-                per_page: 100,     // Limit to 100 issues
+                per_page: 25,     // Limit to 25 issues
                 sort: "created",   // Sort by creation date
                 direction: "desc"  // Get the most recent issues first
             });
@@ -421,13 +421,12 @@ class Maintainability extends Metrics {
             }
     
             // Calculate average resolution time in days
-            const averageResolutionTime = resolvedIssuesCount > 0 ? totalResolutionTime / resolvedIssuesCount : 0;
+            const averageResolutionTimeDays = resolvedIssuesCount > 0 ? totalResolutionTime / resolvedIssuesCount : 0;
 
-            if (averageResolutionTime > 7)
-            {
+            if (averageResolutionTimeDays > 14) {
                 return 0;
             }
-            return 1 - (averageResolutionTime / 7);
+            return 1 - (averageResolutionTimeDays / 14);
             
         
         } catch (error) {
@@ -836,28 +835,17 @@ function processUrls(urlFile: string) {
 /**
  * The main function. Handles command line arguments and executes the appropriate functions.
  */
-function main() {
-    const argv = yargs(hideBin(process.argv))
-        .command('test', 'Run test suite', {}, () => {
-            runTests();
-        })
-        .command('$0 <file>', 'Process URLs from a file', (yargs) => {
-            yargs.positional('file', {
-                describe: 'Path to the file containing URLs',
-                type: 'string'
-            });
-        }, (argv) => {
-            let filename: string = argv.file as string;
-            if (fs.existsSync(filename)) {
-                processUrls(filename);
-            } else {
-                console.error(`File not found: ${argv.file}`);
-                showUsage();
-                process.exit(1);
-            }
-        })
-        .help()
-        .alias('help', 'h')
-        .argv;
+async function main() {
+    const urls = [
+        "https://github.com/cloudinary/cloudinary_npm",
+        "https://github.com/nullivex/nodist",
+        "https://github.com/lodash/lodash",
+      ];
+
+    for (let i = 0; i < urls.length; i++) {
+        let x = new Maintainability(urls[i]);
+        let y = await x.evaluate()
+        console.log(y)
+    } 
 }
 main();
