@@ -4,8 +4,8 @@ import * as path from 'path';
 import http from 'isomorphic-git/http/node/index.cjs';
 import * as fs from 'fs';
 import { performance } from 'perf_hooks';
-import { Metrics } from './Metrics';
-import { ASSERT_EQ } from './testUtils';
+import { Metrics } from './Metrics.js';
+import { ASSERT_EQ } from './testUtils.js';
 
 /**
  * Represents a class that calculates the license compatibility of a repository based on its license information.

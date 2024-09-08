@@ -1,7 +1,7 @@
 
 import { performance } from "perf_hooks";
-import { Metrics } from "./Metrics";
-import { ASSERT_EQ, ASSERT_LT } from "./testUtils";
+import { Metrics } from "./Metrics.js";
+import { ASSERT_EQ, ASSERT_LT } from "./testUtils.js";
 
 /**
  * Represents a class that calculates the bus factor of a repository.

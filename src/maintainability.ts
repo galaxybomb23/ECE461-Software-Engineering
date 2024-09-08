@@ -1,4 +1,4 @@
-import { Metrics } from "./Metrics";
+import { Metrics } from "./Metrics.js";
 
 
 export class Maintainability extends Metrics {

@@ -1,7 +1,7 @@
 
-import { Metrics } from './Metrics';
+import { Metrics } from './Metrics.js';
 import { performance } from 'perf_hooks';
-import { ASSERT_EQ, ASSERT_LT } from './testUtils';
+import { ASSERT_EQ, ASSERT_LT } from './testUtils.js';
 
 export class RampUp extends Metrics {
     // Add a variable to the class

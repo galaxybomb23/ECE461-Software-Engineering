@@ -1,7 +1,7 @@
 
-import { Metrics } from './Metrics';
+import { Metrics } from './Metrics.js';
 import { performance } from 'perf_hooks';
-import { ASSERT_EQ } from './testUtils';
+import { ASSERT_EQ } from './testUtils.js';
 
 /**
  * Represents a class that calculates the correctness of a repository based on its issues data.

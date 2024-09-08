@@ -16,14 +16,12 @@ export let OCTOKIT: Octokit = new Octokit({ auth: githubToken, });
  * @abstract
  */
 export abstract class Metrics {
-    public responseTime: number;
+    public responseTime: number = 0;
     public octokit: Octokit = OCTOKIT;
+    protected url: string;
 
-    constructor(
-        public url: string,
-    ) {
+    constructor(url: string) {
         this.url = url;
-        this.responseTime = 0;
     }
 
     abstract evaluate(): Promise<number>;
