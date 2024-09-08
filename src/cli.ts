@@ -1,12 +1,8 @@
 #!/usr/bin/env node
 
-import * as git from 'isomorphic-git';
-import * as path from 'path';
-import http from 'isomorphic-git/http/node/index.cjs';
-import * as fs from 'fs';
+
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
-import { Octokit } from '@octokit/rest';
 import dotenv from 'dotenv';
 import test from 'node:test';
 import redline from 'readline';
@@ -21,6 +17,7 @@ import { LicenseTest } from './license.js';
 // import { MaintainabilityTest } from './maintainability';
 import { RampUpTest } from './rampUp.js';
 import { NetScoreTest } from './netScore.js';
+import { exit } from 'process';
 
 
 dotenv.config();
@@ -77,11 +74,10 @@ async function runTests() {
     console.log(`Total Rate Limit Used: ${usedRateLimit}`);
 
     // Display test results
-    for (let i = 0; i < results.length; i++) {
-        let result = await results[i];
+    results.forEach((result, index) => {
         passedTests += result.passed;
         failedTests += result.failed;
-    }
+    });
 
     console.log(`\x1b[1;32mTests Passed: ${passedTests}\x1b[0m`);
     console.log(`\x1b[1;31mTests Failed: ${failedTests}\x1b[0m`);
