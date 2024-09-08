@@ -835,17 +835,28 @@ function processUrls(urlFile: string) {
 /**
  * The main function. Handles command line arguments and executes the appropriate functions.
  */
-async function main() {
-    const urls = [
-        "https://github.com/cloudinary/cloudinary_npm",
-        "https://github.com/nullivex/nodist",
-        "https://github.com/lodash/lodash",
-      ];
-
-    for (let i = 0; i < urls.length; i++) {
-        let x = new Maintainability(urls[i]);
-        let y = await x.evaluate()
-        console.log(y)
-    } 
+function main() {
+    const argv = yargs(hideBin(process.argv))
+        .command('test', 'Run test suite', {}, () => {
+            runTests();
+        })
+        .command('$0 <file>', 'Process URLs from a file', (yargs) => {
+            yargs.positional('file', {
+                describe: 'Path to the file containing URLs',
+                type: 'string'
+            });
+        }, (argv) => {
+            let filename: string = argv.file as string;
+            if (fs.existsSync(filename)) {
+                processUrls(filename);
+            } else {
+                console.error(`File not found: ${argv.file}`);
+                showUsage();
+                process.exit(1);
+            }
+        })
+        .help()
+        .alias('help', 'h')
+        .argv;
 }
 main();
