@@ -73,7 +73,8 @@ async function runTests() {
     console.log(`Bus Factor Test: ${apiRemaining[1] - apiRemaining[2]}`);
     console.log(`Correctness Test: ${apiRemaining[2] - apiRemaining[3]}`);
     console.log(`Ramp Up Test: ${apiRemaining[3] - apiRemaining[4]}`);
-    console.log(`Net Score Test: ${apiRemaining[4] - apiRemaining[5]}`);
+    console.log(`Maintainability Test: ${apiRemaining[4] - apiRemaining[5]}`);
+    console.log(`Net Score Test: ${apiRemaining[5] - apiRemaining[6]}`);
     console.log(`Total Rate Limit Used: ${usedRateLimit}`);
 
     // Display test results
