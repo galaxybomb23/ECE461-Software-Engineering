@@ -15,7 +15,7 @@ import { NetScore } from './netScore.js';
 import { BusFactorTest } from './busFactor.js';
 import { CorrectnessTest } from './correctness.js';
 import { LicenseTest } from './license.js';
-// import { MaintainabilityTest } from './maintainability';
+import { MaintainabilityTest } from './maintainability.js';
 import { RampUpTest } from './rampUp.js';
 import { NetScoreTest } from './netScore.js';
 import { exit } from 'process';
@@ -59,6 +59,8 @@ async function runTests() {
     results.push(await CorrectnessTest());
     apiRemaining.push((await OCTOKIT.rateLimit.get()).data.rate.remaining);
     results.push(await RampUpTest());
+    apiRemaining.push((await OCTOKIT.rateLimit.get()).data.rate.remaining);
+    results.push(await MaintainabilityTest());
     apiRemaining.push((await OCTOKIT.rateLimit.get()).data.rate.remaining);
     results.push(await NetScoreTest());
     apiRemaining.push((await OCTOKIT.rateLimit.get()).data.rate.remaining);
