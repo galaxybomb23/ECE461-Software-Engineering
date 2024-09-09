@@ -6,6 +6,7 @@ import { hideBin } from 'yargs/helpers';
 import dotenv from 'dotenv';
 import test from 'node:test';
 import redline from 'readline';
+import fs from 'fs';
 
 //##proprietaries##
 import { OCTOKIT } from './Metrics.js';
