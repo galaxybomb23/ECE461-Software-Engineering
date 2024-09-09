@@ -83,6 +83,8 @@ async function runTests() {
     console.log(`\x1b[1;32mTests Passed: ${passedTests}\x1b[0m`);
     console.log(`\x1b[1;31mTests Failed: ${failedTests}\x1b[0m`);
     console.log('\x1b[1;34mTests complete\x1b[0m');
+
+    exit(1);
 }
 
 // Placeholder function for processing URLs

@@ -31,3 +31,6 @@ jobs:
 
       - name: Run tests
         run: ./run test
+
+      - name: Clean up .env file
+        run: rm .env
