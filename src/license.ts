@@ -1,4 +1,3 @@
-
 import * as git from 'isomorphic-git';
 import * as path from 'path';
 import http from 'isomorphic-git/http/node/index.cjs';
@@ -12,16 +11,17 @@ import { ASSERT_EQ } from './testUtils.js';
  * @extends Metrics
  */
 export class License extends Metrics {
-    // Add a variable to the class
     public license: number = -1;
-    constructor(
-        url: string,
-    ) {
+    constructor(url: string) {
         super(url);
-
     }
 
-    // Helper function to clone the repository
+    /**
+     * Clones the repository to the specified directory.
+     * 
+     * @param cloneDir - The directory where the repository will be cloned.
+     * @returns A promise that resolves when the cloning process is complete.
+     */
     private async cloneRepository(cloneDir: string): Promise<void> {
         await git.clone({
             fs,
@@ -33,7 +33,12 @@ export class License extends Metrics {
         });
     }
 
-    // Helper function to check license compatibility
+    /**
+     * Checks the compatibility of a license text.
+     * 
+     * @param licenseText - The license text to check compatibility for.
+     * @returns A number indicating the compatibility of the license text. Returns 1 if the license is compatible, 0 otherwise.
+     */
     private checkLicenseCompatibility(licenseText: string): number {
         const compatibleLicenses = [
             'LGPL-2.1',
@@ -55,7 +60,12 @@ export class License extends Metrics {
         return licenseRegex.test(licenseText) ? 1 : 0;
     }
 
-    // Helper function to extract license information from README or LICENSE file
+    /**
+     * Extracts license information from the specified directory.
+     * 
+     * @param cloneDir - The directory to search for license information.
+     * @returns A promise that resolves to the extracted license information, or null if no license information is found.
+     */
     private async extractLicenseInfo(cloneDir: string): Promise<string | null> {
         let licenseInfo: string | null = null;
 
@@ -91,7 +101,11 @@ export class License extends Metrics {
         return licenseInfo;
     }
 
-    // The main evaluate function to implement the license check
+    /**
+     * Evaluates the license of the repository.
+     * 
+     * @returns A promise that resolves to the license number.
+     */
     public async evaluate(): Promise<number> {
 
         const cloneDir = path.join('/tmp', 'repo-clone');
@@ -120,27 +134,30 @@ export class License extends Metrics {
     }
 }
 
-
+/**
+ * This function performs license tests on a list of URLs and returns the number of tests passed and failed.
+ * @returns A promise that resolves to an object containing the number of tests passed and failed.
+ */
 export async function LicenseTest(): Promise<{ passed: number, failed: number }> {
     let testsPassed = 0;
     let testsFailed = 0;
     let licenses: License[] = [];
 
-    //first test
+    // First test
     let license = new License('https://github.com/cloudinary/cloudinary_npm');
     let result = await license.evaluate();
     ASSERT_EQ(result, 1, "License Test 1") ? testsPassed++ : testsFailed++;
     console.log(`Response time: ${license.responseTime.toFixed(6)}s\n`);
     licenses.push(license);
 
-    //second test
+    // Second test
     license = new License('https://github.com/nullivex/nodist');
     result = await license.evaluate();
     ASSERT_EQ(result, 1, "License Test 2") ? testsPassed++ : testsFailed++;
     console.log(`Response time: ${license.responseTime.toFixed(6)}s\n`);
     licenses.push(license);
 
-    //third test
+    // Third test
     license = new License('https://github.com/lodash/lodash');
     result = await license.evaluate();
     ASSERT_EQ(result, 1, "License Test 3") ? testsPassed++ : testsFailed++;

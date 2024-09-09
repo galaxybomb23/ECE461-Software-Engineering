@@ -1,16 +1,21 @@
 import { Metrics } from "./Metrics.js";
 
-
+/**
+ * Represents a class for calculating and evaluating the maintainability of a repository.
+ */
 export class Maintainability extends Metrics {
-
     public maintainability: number = -1;
 
-    constructor(
-        url: string,
-    ) {
+    constructor(url: string) {
         super(url);
     }
 
+    /**
+     * Retrieves the owner and repository name from a given GitHub URL.
+     * @param url - The GitHub URL to extract the owner and repository name from.
+     * @returns A promise that resolves to an object containing the owner and repository name.
+     * @throws {Error} If the provided URL is invalid.
+     */
     private async getRepoData(url: string): Promise<{ owner: string; repo: string }> {
         const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)/;
         const match = url.match(regex);
@@ -19,6 +24,14 @@ export class Maintainability extends Metrics {
         return { owner: match[1], repo: match[2] };
     }
 
+    /**
+     * Calculates the maintainability score for a given repository.
+     * 
+     * @param owner - The owner of the repository.
+     * @param repo - The name of the repository.
+     * @returns The maintainability score, a number between 0 and 1. A higher score indicates better maintainability.
+     *          Returns -1 if there was an error fetching the issues.
+     */
     private async calculateMaintainability(owner: string, repo: string): Promise<number> {
         try {
             // Fetch the most recent 100 issues for the repository
@@ -52,22 +65,27 @@ export class Maintainability extends Metrics {
             if (averageResolutionTimeDays > 14) {
                 return 0;
             }
+
             return 1 - (averageResolutionTimeDays / 14);
-
-
         } catch (error) {
             console.error("Error fetching issues:", error);
+
             return -1;
         }
     }
 
+    /**
+     * Evaluates the maintainability of the code.
+     * 
+     * @returns A promise that resolves to the maintainability score.
+     */
     public async evaluate(): Promise<number> {
-
         const rateLimitStatus = await this.getRateLimitStatus();
 
         if (rateLimitStatus.remaining === 0) {
             const resetTime = new Date(rateLimitStatus.reset * 1000).toLocaleTimeString();
             console.log(`Rate limit exceeded. Try again after ${resetTime}`);
+
             return -1;
         }
 
@@ -81,6 +99,5 @@ export class Maintainability extends Metrics {
         this.responseTime = elapsedTime;
 
         return this.maintainability;
-
     }
 }

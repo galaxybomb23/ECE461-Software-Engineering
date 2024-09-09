@@ -3,8 +3,11 @@ import { Metrics } from './Metrics.js';
 import { performance } from 'perf_hooks';
 import { ASSERT_EQ, ASSERT_LT } from './testUtils.js';
 
+/**
+ * Represents a class for evaluating the ramp-up score of a repository.
+ * Inherits from the Metrics class.
+ */
 export class RampUp extends Metrics {
-    // Add a variable to the class
     public rampUp: number = -1;
 
     // point values
@@ -16,12 +19,17 @@ export class RampUp extends Metrics {
         makefile: { name: 'makefile', found: false, fileType: 'file' },
     };
 
-    constructor(
-        url: string,
-    ) {
+    constructor(url: string) {
         super(url);
     }
 
+    /**
+     * Extracts the owner and repo from a GitHub URL.
+     * 
+     * @param url - The GitHub URL.
+     * @returns An object containing the owner and repo.
+     * @throws Error if the URL is invalid.
+     */
     private extractOwnerRepo(url: string): { owner: string; repo: string } {
         const match = url.match(/github\.com\/([^\/]+)\/([^\/]+)/);
         if (!match) {
@@ -34,6 +42,11 @@ export class RampUp extends Metrics {
         };
     }
 
+    /**
+     * Asynchronously evaluates the performance of the code.
+     * 
+     * @returns A promise that resolves to the ramp up value.
+     */
     async evaluate(): Promise<number> {
         const startTime = performance.now();
         this.rampUp = await this.printRepoStructure(this.url);
@@ -58,9 +71,9 @@ export class RampUp extends Metrics {
 
             if (Array.isArray(response.data)) {
                 for (const item of response.data) {
-                    // check each metric to see if it is found
+                    // Check each metric to see if it is found
                     for (const [key, metric] of Object.entries(this.metrics)) {
-                        // ensure the item type = metric type, or the metric type is 'either'. Then check if the metric name is in the item name
+                        // Ensure the item type = metric type, or the metric type is 'either'. Then check if the metric name is in the item name
                         if ((item.type === metric.fileType || metric.fileType === 'either') && item.name.toLowerCase().includes(metric.name)) {
                             this.metrics[key].found = true;
                         }
@@ -83,6 +96,10 @@ export class RampUp extends Metrics {
     }
 }
 
+/**
+ * Executes a ramp-up test for a list of URLs and returns the number of tests passed and failed.
+ * @returns A promise that resolves to an object containing the number of tests passed and failed.
+ */
 export async function RampUpTest(): Promise<{ passed: number, failed: number }> {
     let testsPassed = 0;
     let testsFailed = 0;

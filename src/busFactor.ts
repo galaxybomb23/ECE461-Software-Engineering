@@ -1,4 +1,3 @@
-
 import { performance } from "perf_hooks";
 import { Metrics } from "./Metrics.js";
 import { ASSERT_EQ, ASSERT_LT } from "./testUtils.js";
@@ -42,7 +41,6 @@ export class BusFactor extends Metrics {
 
         return this.busFactor;
     }
-
 
     /**
      * Retrieves the owner and repository name from a given GitHub URL.
@@ -122,12 +120,16 @@ export class BusFactor extends Metrics {
     }
 }
 
+/**
+ * Executes a series of tests to evaluate the bus factor of different GitHub repositories.
+ * @returns A promise that resolves to an object containing the number of tests passed and failed.
+ */
 export async function BusFactorTest(): Promise<{ passed: number, failed: number }> {
     let testsPassed = 0;
     let testsFailed = 0;
     let busFactors: BusFactor[] = [];
 
-    //first test
+    // First test
     let busFactor = new BusFactor('https://github.com/cloudinary/cloudinary_npm');
     let result = await busFactor.evaluate();
     ASSERT_EQ(result, 0.15, "Bus Factor Test 1") ? testsPassed++ : testsFailed++;
@@ -136,7 +138,7 @@ export async function BusFactorTest(): Promise<{ passed: number, failed: number 
     busFactors.push(busFactor);
 
 
-    //second test
+    // Second test
     busFactor = new BusFactor('https://github.com/nullivex/nodist');
     result = await busFactor.evaluate();
     ASSERT_EQ(result, 0.07, "Bus Factor Test 2") ? testsPassed++ : testsFailed++;
@@ -144,7 +146,7 @@ export async function BusFactorTest(): Promise<{ passed: number, failed: number 
     console.log(`Response time: ${busFactor.responseTime.toFixed(6)}s\n`);
     busFactors.push(busFactor);
 
-    //third test
+    // Third test
     busFactor = new BusFactor('https://github.com/lodash/lodash');
     result = await busFactor.evaluate();
     ASSERT_EQ(result, 0.02, "Bus Factor Test 3") ? testsPassed++ : testsFailed++;
