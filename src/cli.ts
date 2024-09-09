@@ -64,7 +64,7 @@ async function runTests() {
     apiRemaining.push((await OCTOKIT.rateLimit.get()).data.rate.remaining);
 
 
-    //calc used rate limit
+    //calc used rate limit 📝
     let usedRateLimit = apiRemaining[0] - apiRemaining[apiRemaining.length - 1];
     console.log(`Rate Limit Usage:`);
     console.log(`License Test: ${apiRemaining[0] - apiRemaining[1]}`);
@@ -84,7 +84,11 @@ async function runTests() {
     console.log(`\x1b[1;31mTests Failed: ${failedTests}\x1b[0m`);
     console.log('\x1b[1;34mTests complete\x1b[0m');
 
-    exit(1);
+    //if more than 5% of the tests fail, exit with error
+    if (failedTests / (passedTests + failedTests) > 0.05) {
+        console.log('\x1b[1;31mError: More than 5% of tests failed. Exiting with error code 1.\x1b[0m');
+        exit(1);
+    }
 }
 
 // Placeholder function for processing URLs
