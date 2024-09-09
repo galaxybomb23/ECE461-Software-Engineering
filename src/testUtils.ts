@@ -1,0 +1,82 @@
+
+
+
+/**
+ * Asserts that the actual value is equal to the expected value within a threshold.
+ * 
+ * @param actual - The actual value to compare.
+ * @param expected - The expected value to compare against.
+ * @param testName - The name of the test (optional).
+ * @returns Returns 1 if the assertion passes, otherwise returns 0.
+ */
+export function ASSERT_EQ(actual: number, expected: number, testName: string = ''): number {
+    let threshold = 0.01;
+
+    if (Math.abs(expected - actual) < threshold) {
+        console.log(`\x1b[32m${testName}: Passed\x1b[0m`);
+        return 1;
+    }
+    else {//📝
+        console.error(`${testName}: Failed`);
+        console.error(`Expected: ${expected}, Actual: ${actual}`);
+        return 0;
+    }
+}
+
+export function ASSERT_NEAR(actual: number, expected: number, threshold: number, testName: string = ''): number {
+    if (Math.abs(expected - actual) < threshold) {
+        console.log(`\x1b[32m${testName}: Passed (Expected: ${expected}, Actual: ${actual})\x1b[0m`);
+        return 1;
+    }
+    else {
+        console.error(`${testName}: Failed`);
+        console.error(`Expected: ${expected}, Actual: ${actual}`);
+        return 0;
+    }
+}
+
+/**
+ * Asserts that the actual value is less than the expected value with a threshold of 0.005.
+ * 
+ * @param actual - The actual value to be compared.
+ * @param expected - The expected value.
+ * @param testName - The name of the test (optional).
+ * @returns 1 if the assertion passes, 0 otherwise.
+ */
+export function ASSERT_LT(actual: number, expected: number, testName: string = ''): number {
+    let threshold = 0.005;
+
+    if (actual < (expected + threshold)) {
+        console.log(`\x1b[32m${testName}:\tPassed\x1b[0m`);
+        return 1;
+    }
+    else {
+        console.error(`${testName}:\tFailed\tExpected: ${expected}, Actual: ${actual}`);
+        return 0;
+    }
+}
+
+/**
+ * Asserts that the actual value is greater than the expected value with a given threshold.
+ * 
+ * @param actual - The actual value to be compared.
+ * @param expected - The expected value to be compared against.
+ * @param testName - The name of the test (optional).
+ * @returns 1 if the assertion passes, 0 otherwise.
+ */
+export function ASSERT_GT(actual: number, expected: number, testName: string = ''): number {
+    let threshold = 0.01;
+
+    if (actual > (expected - threshold)) {
+        console.log(`\x1b[32m${testName}: Passed\x1b[0m`);
+        return 1;
+    }
+    else {
+        console.error(`${testName}: Failed\tExpected: ${expected}, Actual: ${actual}`);
+        return 0;
+    }
+}
+
+
+
+
