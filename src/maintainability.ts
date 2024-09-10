@@ -12,14 +12,6 @@ export class Maintainability extends Metrics {
         super(url);
     }
 
-    private async getRepoData(url: string): Promise<{ owner: string; repo: string }> {
-        const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)/;
-        const match = url.match(regex);
-        if (!match) throw new Error("Invalid GitHub URL");
-
-        return { owner: match[1], repo: match[2] };
-    }
-
     private async calculateMaintainability(owner: string, repo: string): Promise<number> {
         try {
             // Fetch the most recent 100 issues for the repository
@@ -74,8 +66,7 @@ export class Maintainability extends Metrics {
 
         const startTime = performance.now();
 
-        const { owner, repo } = await this.getRepoData(this.url);
-        this.maintainability = await this.calculateMaintainability(owner, repo);
+        this.maintainability = await this.calculateMaintainability(this.owner, this.repo);
 
         const endTime = performance.now();
         const elapsedTime = Number(endTime - startTime) / 1e6; // Convert to milliseconds

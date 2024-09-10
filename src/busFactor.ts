@@ -33,8 +33,7 @@ export class BusFactor extends Metrics {
         }
 
         const startTime = performance.now();
-        const { owner, repo } = await this.getRepoData(this.url);
-        const commitData = await this.getCommitData(owner, repo);
+        const commitData = await this.getCommitData(this.owner, this.repo);
         this.busFactor = this.calculateBusFactor(commitData);
         const endTime = performance.now();
         const elapsedTime = Number(endTime - startTime) / 1e6; // Convert to milliseconds
@@ -43,21 +42,6 @@ export class BusFactor extends Metrics {
         return this.busFactor;
     }
 
-
-    /**
-     * Retrieves the owner and repository name from a given GitHub URL.
-     * 
-     * @param url - The GitHub URL to extract the owner and repository from.
-     * @returns A promise that resolves to an object containing the owner and repository name.
-     * @throws An error if the provided URL is invalid.
-     */
-    private async getRepoData(url: string): Promise<{ owner: string; repo: string }> {
-        const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)/;
-        const match = url.match(regex);
-        if (!match) throw new Error("Invalid GitHub URL");
-
-        return { owner: match[1], repo: match[2] };
-    }
 
     /**
      * Retrieves commit data for a given owner and repository.
