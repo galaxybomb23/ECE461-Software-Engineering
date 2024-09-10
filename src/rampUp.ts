@@ -22,18 +22,6 @@ export class RampUp extends Metrics {
         super(url);
     }
 
-    private extractOwnerRepo(url: string): { owner: string; repo: string } {
-        const match = url.match(/github\.com\/([^\/]+)\/([^\/]+)/);
-        if (!match) {
-            throw new Error("Invalid GitHub URL");
-        }
-
-        return {
-            owner: match[1],
-            repo: match[2],
-        };
-    }
-
     async evaluate(): Promise<number> {
         const startTime = performance.now();
         this.rampUp = await this.printRepoStructure(this.url);
@@ -49,7 +37,9 @@ export class RampUp extends Metrics {
     */
     async printRepoStructure(url: string, path: string = ''): Promise<number> {
         try {
-            const { owner, repo } = this.extractOwnerRepo(url);
+            const owner = this.owner;
+            const repo = this.repo;
+            
             const response = await this.octokit.repos.getContent({
                 owner,
                 repo,
