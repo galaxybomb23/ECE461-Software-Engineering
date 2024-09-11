@@ -148,7 +148,8 @@ async function processUrls(filePath: string): Promise<void> {
     for (const url of githubUrls) {
         const netScore = new NetScore(url);
         const result = await netScore.evaluate();
-        console.log(netScore.toString());
+        // console.log(netScore.toString());
+        process.stdout.write(netScore.toString() + '\n');
     }
 }
 
