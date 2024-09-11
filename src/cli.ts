@@ -37,7 +37,7 @@ async function getGithubUrlFromNpm(npmUrl: string): Promise<string | null> {
         if (repoUrl && repoUrl.includes('github.com')) {
             // Normalize the URL (remove 'git+', 'ssh://git@', and '.git' if present)
             console.log(`Found GitHub URL for ${npmUrl}: ${repoUrl}`);
-            let normalizedUrl = repoUrl.replace(/^git\+/, '').replace(/^ssh:\/\/git@github.com/, 'https://github.com/').replace(/\.git$/, '');
+            let normalizedUrl = repoUrl.replace(/^git\+/, '').replace(/^ssh:\/\/git@github.com/, 'https://github.com').replace(/\.git$/, '');
             return normalizedUrl;
         } else {
             return null;
@@ -144,12 +144,12 @@ async function processUrls(filePath: string): Promise<void> {
     console.log('GitHub URLs:');
     console.log(githubUrls);
 
-    // // Process each GitHub URL
-    // for (const url of githubUrls) {
-    //     const netScore = new NetScore(url);
-    //     const result = await netScore.evaluate();
-    //     console.log(netScore.toString());
-    // }
+    // Process each GitHub URL
+    for (const url of githubUrls) {
+        const netScore = new NetScore(url);
+        const result = await netScore.evaluate();
+        console.log(netScore.toString());
+    }
 }
 
 /**

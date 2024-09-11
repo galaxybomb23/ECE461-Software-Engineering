@@ -73,18 +73,34 @@ export class NetScore extends Metrics {
         }
         // assert(this.netScore >= 0 && this.netScore <= 1, 'NetScore out of bounds');
 
-
         // calculate the response time
         const elapsedTime = Number(endTime - startTime) / 1e6; // Convert to milliseconds
         this.responseTime = elapsedTime
 
         return this.netScore;
-
     }
 
     toString(): string {
-        // Implement the toString method
-        return `{"URL":"${this.url}", "NetScore": ${this.netScore}, "NetScore_Latency": ${this.responseTime}, "RampUp": ${this.rampUp.rampUp}, "RampUp_Latency": ${this.rampUp.responseTime}, "Correctness": ${this.correctness.correctness}, "Correctness_Latency": ${this.correctness.responseTime}, "BusFactor": ${this.busFactor.busFactor}, "BusFactor_Latency": ${this.busFactor.responseTime}, "ResponsiveMaintainer": ${this.maintainability.maintainability}, "ResponsiveMaintainer_Latency": ${this.maintainability.responseTime}, "License": ${this.license.license}, "License_Latency": ${this.license.responseTime}}`;
+        return `{
+            "URL": "${this.url}",
+            "NetScore": ${this.netScore.toFixed(3)},
+            "NetScore_Latency": ${this.responseTime.toFixed(3)},
+            "RampUp": ${this.rampUp.rampUp.toFixed(3)},
+            "RampUp_Latency": ${this.rampUp.responseTime.toFixed(3)},
+            "Correctness": ${this.correctness.correctness.toFixed(3)},
+            "Correctness_Latency": ${this.correctness.responseTime.toFixed(3)},
+            "BusFactor": ${this.busFactor.busFactor.toFixed(3)},
+            "BusFactor_Latency": ${this.busFactor.responseTime.toFixed(3)},
+            "ResponsiveMaintainer": ${this.maintainability.maintainability.toFixed(3)},
+            "ResponsiveMaintainer_Latency": ${this.maintainability.responseTime.toFixed(3)},
+            "License": ${this.license.license.toFixed(3)},
+            "License_Latency": ${this.license.responseTime.toFixed(3)}
+        }`.replace(/\s+/g, ' ')
+        .replace(/\s*{\s*/g, '{')
+        .replace(/\s*}\s*/g, '}')
+        .replace(/"\s*:\s*/g, '":')
+        .replace(/\s*"\s*/g, '"')
+        .replace(/,(?!\s)/g, ', ');
     }
 }
 

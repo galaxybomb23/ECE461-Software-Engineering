@@ -27,7 +27,6 @@ export abstract class Metrics {
         const { owner, repo } = this.getRepoData(this.url);
         this.owner = owner;
         this.repo = repo;
-        
     }
 
     private getRepoData(url: string): { owner: string; repo: string } {
