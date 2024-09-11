@@ -1,6 +1,3 @@
-
-
-
 /**
  * Asserts that the actual value is equal to the expected value within a threshold.
  * 
@@ -47,7 +44,7 @@ export function ASSERT_LT(actual: number, expected: number, testName: string = '
     let threshold = 0.005;
 
     if (actual < (expected + threshold)) {
-        console.log(`\x1b[32m${testName}:\tPassed\x1b[0m`);
+        console.log(`\x1b[32m${testName}: Passed\x1b[0m`);
         return 1;
     }
     else {

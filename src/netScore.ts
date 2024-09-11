@@ -1,4 +1,3 @@
-
 import { Metrics } from './Metrics.js';
 import { performance } from 'perf_hooks';
 import { BusFactor } from './busFactor.js';
@@ -8,7 +7,6 @@ import { RampUp } from './rampUp.js';
 import { Maintainability } from './maintainability.js';
 import { assert } from 'console';
 import { ASSERT_EQ, ASSERT_LT, ASSERT_NEAR } from './testUtils.js';
-
 
 export class NetScore extends Metrics {
     // Add a variable to the class
@@ -20,10 +18,7 @@ export class NetScore extends Metrics {
     rampUp: RampUp;
     maintainability: Maintainability;
 
-
-    constructor(
-        url: string,
-    ) {
+    constructor(url: string) {
         super(url);
         this.busFactor = new BusFactor(url);
         this.correctness = new Correctness(url);
@@ -34,7 +29,7 @@ export class NetScore extends Metrics {
     }
 
     async evaluate(): Promise<number> {
-        // generate the metrics
+        // Generate the metrics
         const startTime = performance.now();
         await Promise.all([
             this.busFactor.evaluate(),
@@ -45,8 +40,8 @@ export class NetScore extends Metrics {
         ]);
         const endTime = performance.now();
 
-        // calculate the net score
-        //if any metric is -1 then netscore is 0
+        // Calculate the net score
+        // If any metric is -1 then netscore is 0
         if (this.busFactor.busFactor == -1 || this.correctness.correctness == -1 || this.license.license == -1 || this.rampUp.rampUp == -1 || this.maintainability.maintainability == -1) {
             this.netScore = 0;
             return this.netScore;
@@ -58,12 +53,12 @@ export class NetScore extends Metrics {
             }
         }
 
-        //check if netscore is between 0 and 1
+        // Check if netscore is between 0 and 1
         if (this.netScore < 0 || this.netScore > 1) {
 
             console.log(`NetScore out of bounds: ${this.netScore}`);
 
-            //print the metrics
+            // Print the metrics
             console.log(`BusFactor: ${this.busFactor.busFactor}`);
             console.log(`Correctness: ${this.correctness.correctness}`);
             console.log(`RampUp: ${this.rampUp.rampUp}`);
@@ -73,7 +68,7 @@ export class NetScore extends Metrics {
         }
         // assert(this.netScore >= 0 && this.netScore <= 1, 'NetScore out of bounds');
 
-        // calculate the response time
+        // Calculate the response time
         const elapsedTime = Number(endTime - startTime) / 1e6; // Convert to milliseconds
         this.responseTime = elapsedTime
 
@@ -109,7 +104,7 @@ export async function NetScoreTest(): Promise<{ passed: number, failed: number }
     let testsFailed = 0;
     let netScores: NetScore[] = [];
 
-    //first test
+    // First test
     let netScore = new NetScore('https://github.com/cloudinary/cloudinary_npm');
     let result = await netScore.evaluate();
     ASSERT_NEAR(result, 0.65, .05, "Net Score Test 1") ? testsPassed++ : testsFailed++;
@@ -117,7 +112,7 @@ export async function NetScoreTest(): Promise<{ passed: number, failed: number }
     console.log(`Response time: ${netScore.responseTime.toFixed(6)}s\n`);
     netScores.push(netScore);
 
-    //second test
+    // Second test
     netScore = new NetScore('https://github.com/nullivex/nodist');
     result = await netScore.evaluate();
     ASSERT_NEAR(result, 0.20, .05, "Net Score Test 2") ? testsPassed++ : testsFailed++;
@@ -125,7 +120,7 @@ export async function NetScoreTest(): Promise<{ passed: number, failed: number }
     console.log(`Response time: ${netScore.responseTime.toFixed(6)}s\n`);
     netScores.push(netScore);
 
-    //third test
+    // Third test
     netScore = new NetScore('https://github.com/lodash/lodash');
     result = await netScore.evaluate();
     ASSERT_NEAR(result, 0.42, .05, "Net Score Test 3") ? testsPassed++ : testsFailed++;
