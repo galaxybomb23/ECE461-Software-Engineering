@@ -14,7 +14,7 @@ import { NetScore } from './netScore.js';
 import { BusFactorTest } from './busFactor.js';
 import { CorrectnessTest } from './correctness.js';
 import { LicenseTest } from './license.js';
-// import { MaintainabilityTest } from './maintainability';
+import { MaintainabilityTest } from './maintainability.js';
 import { RampUpTest } from './rampUp.js';
 import { NetScoreTest } from './netScore.js';
 import { exit } from 'process';
@@ -89,18 +89,21 @@ async function runTests() {
     apiRemaining.push((await OCTOKIT.rateLimit.get()).data.rate.remaining);
     results.push(await RampUpTest());
     apiRemaining.push((await OCTOKIT.rateLimit.get()).data.rate.remaining);
+    results.push(await MaintainabilityTest());
+    apiRemaining.push((await OCTOKIT.rateLimit.get()).data.rate.remaining);
     results.push(await NetScoreTest());
     apiRemaining.push((await OCTOKIT.rateLimit.get()).data.rate.remaining);
 
 
-    //calc used rate limit
+    //calc used rate limit 📝
     let usedRateLimit = apiRemaining[0] - apiRemaining[apiRemaining.length - 1];
     console.log(`Rate Limit Usage:`);
     console.log(`License Test: ${apiRemaining[0] - apiRemaining[1]}`);
     console.log(`Bus Factor Test: ${apiRemaining[1] - apiRemaining[2]}`);
     console.log(`Correctness Test: ${apiRemaining[2] - apiRemaining[3]}`);
     console.log(`Ramp Up Test: ${apiRemaining[3] - apiRemaining[4]}`);
-    console.log(`Net Score Test: ${apiRemaining[4] - apiRemaining[5]}`);
+    console.log(`Maintainability Test: ${apiRemaining[4] - apiRemaining[5]}`);
+    console.log(`Net Score Test: ${apiRemaining[5] - apiRemaining[6]}`);
     console.log(`Total Rate Limit Used: ${usedRateLimit}`);
 
     // Display test results
@@ -112,6 +115,12 @@ async function runTests() {
     console.log(`\x1b[1;32mTests Passed: ${passedTests}\x1b[0m`);
     console.log(`\x1b[1;31mTests Failed: ${failedTests}\x1b[0m`);
     console.log('\x1b[1;34mTests complete\x1b[0m');
+
+    //if more than 5% of the tests fail, exit with error
+    if (failedTests / (passedTests + failedTests) > 0.05) {
+        console.log('\x1b[1;31mError: More than 5% of tests failed. Exiting with error code 1.\x1b[0m');
+        exit(1);
+    }
 }
 
 async function processUrls(filePath: string): Promise<void> {

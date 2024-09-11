@@ -77,13 +77,9 @@ export class Correctness extends Metrics {
      */
     private async fetchIssuesData(): Promise<{ openBugIssues: number; totalOpenIssues: number }> {
         try {
-            // Extract the owner and repo from the URL
-            const repoInfo = this.extractRepoInfo();
-            if (!repoInfo) {
-                throw new Error('Invalid repository URL');
-            }
-
-            const { owner, repo } = repoInfo;
+            const owner = this.owner;
+            const repo = this.repo;
+        
             const { data } = await this.octokit.issues.listForRepo({
                 owner,
                 repo,
@@ -101,22 +97,6 @@ export class Correctness extends Metrics {
             console.error('Error fetching issues data:', error);
             throw error;
         }
-    }
-
-    /**
-     * Extracts the owner and repository name from a GitHub URL.
-     * 
-     * @returns An object containing the owner and repo properties, or null if the URL is invalid.
-     */
-    private extractRepoInfo(): { owner: string; repo: string } | null {
-        // Regex to parse GitHub URL and extract owner and repository name
-        const regex = /https:\/\/github\.com\/([^\/]+)\/([^\/]+)/;
-        const match = this.url.match(regex);
-
-        if (match && match.length >= 3) {
-            return { owner: match[1], repo: match[2] };
-        }
-        return null;
     }
 }
 

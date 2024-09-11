@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - 30-setup-ci
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22.8.0' # Or whatever version you are using
+
+      - name: Setup .env file
+        run: |
+            echo "API_TOKEN=${{ secrets.API_TOKEN }}" >> .env
+
+      - name: Install Node.js and dependencies
+        run: ./run install
+
+      - name: Run tests
+        run: ./run test
+
+      - name: Clean up .env file
+        run: rm .env
