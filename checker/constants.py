@@ -14,7 +14,7 @@ REPO_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 
 ## =================== DO NOT MODIFY BELOW THIS LINE =================== ##
 # constants
-ONE_URL = os.path.join(os.path.dirname(os.path.realpath(__file__)), "one-url.txt")
+ONE_URL = f"{REPO_PATH}/checker/one-url.txt"
 
 # JSON Fields
 FIELDS = [
