@@ -21,13 +21,20 @@ def run_install() -> int:
     url_file = CLI_CMD_WRAPPER(f"./run {ONE_URL}")
 
     install_rc, output = install.run()
+    if not install_rc:
+        print(output)
     test_suite_rc, output = test_suite.run()
+    if not test_suite_rc:
+        print(output)
     url_file_rc, output = url_file.run()
+    if not url_file_rc:
+        print(output)
     total_correct = install_rc + test_suite_rc + url_file_rc
 
     print_test_result("> Install command %s successfully!", install_rc, "exited", "did not exit")
     print_test_result("> Subsequent test command %s successfully!", test_suite_rc, "exited", "did not exit")
     print_test_result("> Subsequent URL_FILE command %s successfully!", url_file_rc, "exited", "did not exit")
+
 
     return total_correct
 
