@@ -1,4 +1,3 @@
-
 import { Metrics } from './Metrics.js';
 import { performance } from 'perf_hooks';
 import { ASSERT_EQ } from './testUtils.js';
