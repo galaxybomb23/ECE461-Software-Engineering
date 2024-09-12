@@ -21,8 +21,17 @@ def run_install() -> int:
     url_file = CLI_CMD_WRAPPER(f"./run {ONE_URL}")
 
     install_rc, output = install.run()
+    if not install_rc:
+        print(f"{RED}> Install command failed to run.{RESET}")
+        print(output)
     test_suite_rc, output = test_suite.run()
+    if not test_suite_rc:
+        print(f"{RED}> Test suite command failed to run.{RESET}")
+        print(output)
     url_file_rc, output = url_file.run()
+    if not url_file_rc:
+        print(f"{RED}> URL_FILE command failed to run.{RESET}")
+        print(output)
     total_correct = install_rc + test_suite_rc + url_file_rc
 
     print_test_result("> Install command %s successfully!", install_rc, "exited", "did not exit")
@@ -49,6 +58,8 @@ def run_urlfile() -> int:
     if url_file_rc:
         total_correct += 1
     else:
+        print(f"{RED}> URL_FILE command failed to run.{RESET}")
+        print(output)
         return 0
 
     is_valid_output = False
@@ -58,12 +69,14 @@ def run_urlfile() -> int:
             obj_keys = [x.lower() for x in ndjson_obj.keys()]
             is_valid_output = all(field.lower() in obj_keys for field in ALL_FIELDS)
     except Exception as e:
+        print(e)
         pass
 
     print_test_result("> URL_FILE output is %s NDJSON!", is_valid_output, "valid", "not valid")
     if is_valid_output:
         total_correct += 1
     else:
+        print(output)
         return total_correct
     
     module_score = MODULE_SCORE(output)
@@ -77,6 +90,8 @@ def run_urlfile() -> int:
     print_test_result("> URL_FILE command %s successfully when LOG_FILE is not set!", not url_file_rc, "did not exit", "exited")
     if not url_file_rc:
         total_correct += 1
+    else:
+        print(output)
 
     os.environ["LOG_FILE"] = "/tmp/log"
     os.environ["GITHUB_TOKEN"] = ""
@@ -85,6 +100,8 @@ def run_urlfile() -> int:
     print_test_result("> URL_FILE command %s successfully when GITHUB_TOKEN is not set!", not url_file_rc, "did not exit", "exited")
     if not url_file_rc:
         total_correct += 1
+    else:
+        print(output)
     
     return total_correct
 
@@ -110,6 +127,7 @@ def run_test_suite() -> int:
     if test_suite_match:
         total_correct += 1
     else:
+        print(output)
         return total_correct
         
     results = test_suite_regex.findall(output)
@@ -142,7 +160,8 @@ def main():
     os.environ['GITHUB_TOKEN'] = GITHUB_TOKEN
     os.environ['LOG_LEVEL'] = str(LOG_LEVEL)
     os.environ['LOG_FILE'] = LOG_FILE
-    
+    exit_code = 0
+
     if not os.path.exists(LOG_FILE):
         os.makedirs(os.path.dirname(LOG_FILE), exist_ok=True)
         with open(LOG_FILE, 'w') as f:
@@ -159,16 +178,23 @@ def main():
     print(f"{BOLD}{BLUE}Testing './run install'...{RESET}")
     total_correct = run_install()
     print(f"{BOLD}{YELLOW if total_correct < 3 else GREEN} {total_correct} / 3 tests passed.{RESET}\n")
+    if total_correct < 3:
+        exit_code = 1
 
     # Run test_suite test
     print(f"{BOLD}{BLUE}Testing './run test'...{RESET}")
     total_correct = run_test_suite()
     print(f"{BOLD}{YELLOW if total_correct < 4 else GREEN} {total_correct} / 4 tests passed.{RESET}\n")
+    if total_correct < 4:
+        exit_code = 1
 
     # Run url_file test
     print(f"{BOLD}{BLUE}Testing './run URL_FILE'...{RESET}")
     total_correct = run_urlfile()
     print(f"{BOLD}{YELLOW if total_correct < 5 else GREEN} {total_correct} / 5 tests passed.{RESET}\n")
+    if total_correct < 5:
+        exit_code = 1
 
+    sys.exit(exit_code)
 if __name__ == "__main__":
     main()

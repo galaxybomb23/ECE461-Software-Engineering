@@ -1,13 +1,17 @@
 import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 ## =================== UPDATE THESE VALUES =================== ##
 # Env variables
-GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "")
-LOG_FILE = os.environ.get("LOG_FILE", "/tmp/log.log")
-LOG_LEVEL = os.environ.get("LOG_LEVEL", "INFO")
+GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
+LOG_FILE = os.getenv("LOG_FILE")
+LOG_LEVEL = os.getenv("LOG_LEVEL")
 
 # Repository location
-REPO_PATH = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+REPO_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 
 
 
