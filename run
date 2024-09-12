@@ -1,7 +1,9 @@
 #!/bin/bash
 
 # change this to run from any directory
+original_dir=$(pwd)
 cd "$(dirname "$0")"
+mkdir -p logs
 echo "Running from $(pwd)" > logs/run.log
 
 
@@ -73,3 +75,6 @@ case $1 in
     ./dist/cli.js "$@" 
     ;;
 esac
+
+# change back to the original directory
+cd "$original_dir"
