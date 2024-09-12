@@ -1,4 +1,5 @@
 import { Metrics } from "./Metrics.js";
+import { ASSERT_EQ, ASSERT_LT, ASSERT_NEAR } from './testUtils.js';
 
 /**
  * Represents a class for calculating and evaluating the maintainability of a repository.
@@ -8,20 +9,6 @@ export class Maintainability extends Metrics {
 
     constructor(url: string) {
         super(url);
-    }
-
-    /**
-     * Retrieves the owner and repository name from a given GitHub URL.
-     * @param url - The GitHub URL to extract the owner and repository name from.
-     * @returns A promise that resolves to an object containing the owner and repository name.
-     * @throws {Error} If the provided URL is invalid.
-     */
-    private async getRepoData(url: string): Promise<{ owner: string; repo: string }> {
-        const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)/;
-        const match = url.match(regex);
-        if (!match) throw new Error("Invalid GitHub URL");
-
-        return { owner: match[1], repo: match[2] };
     }
 
     /**
@@ -39,7 +26,7 @@ export class Maintainability extends Metrics {
                 owner: owner,
                 repo: repo,
                 state: "all",      // Fetch both open and closed issues
-                per_page: 25,     // Limit to 25 issues
+                per_page: 25,      // Limit to 25 issues
                 sort: "created",   // Sort by creation date
                 direction: "desc"  // Get the most recent issues first
             });
@@ -91,8 +78,7 @@ export class Maintainability extends Metrics {
 
         const startTime = performance.now();
 
-        const { owner, repo } = await this.getRepoData(this.url);
-        this.maintainability = await this.calculateMaintainability(owner, repo);
+        this.maintainability = await this.calculateMaintainability(this.owner, this.repo);
 
         const endTime = performance.now();
         const elapsedTime = Number(endTime - startTime) / 1e6; // Convert to milliseconds
@@ -100,4 +86,33 @@ export class Maintainability extends Metrics {
 
         return this.maintainability;
     }
+}
+
+export async function MaintainabilityTest(): Promise<{ passed: number, failed: number }> {
+    let testsPassed = 0;
+    let testsFailed = 0;
+    let maintainabilityTests: Maintainability[] = [];
+
+    const url_to_expected_score = [
+        { url: "https://github.com/nullivex/nodist", expectedMaintainability: 0.01 },
+        { url: "https://github.com/cloudinary/cloudinary_npm", expectedMaintainability: 0.8 },
+        { url: "https://github.com/lodash/lodash", expectedMaintainability: 0.6 },
+    ];
+
+    for (const test of url_to_expected_score) {
+
+        let maintainability = new Maintainability(test.url);
+        let result = await maintainability.evaluate();
+
+        let threshold: number = 0.1
+        ASSERT_NEAR(result, test.expectedMaintainability, threshold, `Maintainability Test for ${test.url}`) ? testsPassed++ : testsFailed++;
+        
+        ASSERT_LT(maintainability.responseTime, 0.004, `Maintainability Response_Time Test for ${test.url}`) ? testsPassed++ : testsFailed++;
+
+        console.log(`Maintainability Response time: ${maintainability.responseTime.toFixed(6)}s\n`);
+
+        maintainabilityTests.push(maintainability);
+    }
+
+    return { passed: testsPassed, failed: testsFailed };
 }

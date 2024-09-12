@@ -5,7 +5,7 @@ dotenv.config();
 // Access the token value
 const githubToken = process.env.API_TOKEN;
 if (!githubToken) {
-    throw new Error('GITHUB_TOKEN is not defined in the .env file');
+    throw new Error('API_TOKEN is not defined in the .env file');
 }
 export let OCTOKIT: Octokit = new Octokit({ auth: githubToken, });
 
@@ -17,9 +17,21 @@ export abstract class Metrics {
     public responseTime: number = 0;
     public octokit: Octokit = OCTOKIT;
     protected url: string;
+    protected owner: string;
+    protected repo: string;
 
     constructor(url: string) {
         this.url = url;
+        const { owner, repo } = this.getRepoData(this.url);
+        this.owner = owner;
+        this.repo = repo;
+    }
+
+    private getRepoData(url: string): { owner: string; repo: string } {
+        const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)/;
+        const match = url.match(regex);
+        if (!match) throw new Error("Invalid GitHub URL");
+        return { owner: match[1], repo: match[2] };
     }
 
     abstract evaluate(): Promise<number>;

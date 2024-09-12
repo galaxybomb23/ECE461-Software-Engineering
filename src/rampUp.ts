@@ -24,25 +24,6 @@ export class RampUp extends Metrics {
     }
 
     /**
-     * Extracts the owner and repo from a GitHub URL.
-     * 
-     * @param url - The GitHub URL.
-     * @returns An object containing the owner and repo.
-     * @throws Error if the URL is invalid.
-     */
-    private extractOwnerRepo(url: string): { owner: string; repo: string } {
-        const match = url.match(/github\.com\/([^\/]+)\/([^\/]+)/);
-        if (!match) {
-            throw new Error("Invalid GitHub URL");
-        }
-
-        return {
-            owner: match[1],
-            repo: match[2],
-        };
-    }
-
-    /**
      * Asynchronously evaluates the performance of the code.
      * 
      * @returns A promise that resolves to the ramp up value.
@@ -62,7 +43,9 @@ export class RampUp extends Metrics {
     */
     async printRepoStructure(url: string, path: string = ''): Promise<number> {
         try {
-            const { owner, repo } = this.extractOwnerRepo(url);
+            const owner = this.owner;
+            const repo = this.repo;
+            
             const response = await this.octokit.repos.getContent({
                 owner,
                 repo,
