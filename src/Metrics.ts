@@ -1,4 +1,3 @@
-
 import { Octokit } from '@octokit/rest';
 import { createLogger, format, Logger, transports } from 'winston';
 import dotenv from 'dotenv';
@@ -20,7 +19,6 @@ if (!logFile) {
 }
 
 export let OCTOKIT: Octokit = new Octokit({ auth: githubToken, });
-
 export let logger: Logger = createLogger({
     level: logLevel,
     format: format.combine(

@@ -1,17 +1,14 @@
 #!/usr/bin/env node
 
-
+// External dependencies
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import dotenv from 'dotenv';
-import test from 'node:test';
-import redline from 'readline';
 import fs from 'fs';
 
-//##proprietaries##
 import { OCTOKIT, logger } from './Metrics.js';
 import { NetScore } from './netScore.js';
-//tests
+
 import { BusFactorTest } from './busFactor.js';
 import { CorrectnessTest } from './correctness.js';
 import { LicenseTest } from './license.js';
@@ -19,7 +16,6 @@ import { MaintainabilityTest } from './maintainability.js';
 import { RampUpTest } from './rampUp.js';
 import { NetScoreTest } from './netScore.js';
 import { exit } from 'process';
-
 
 dotenv.config();
 
@@ -35,6 +31,11 @@ function showUsage() {
 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
+/**
+ * Runs the tests and displays the results.
+ * 
+ * @returns {Promise<void>} A promise that resolves when the tests are complete.
+ */
 async function runTests() {
     let passedTests = 0;
     let failedTests = 0;
@@ -43,12 +44,12 @@ async function runTests() {
     logger.info('Running tests...');
     logger.info('Checking environment variables...');
 
-    // get token from environment variable
+    // Get token from environment variable
     let status = await OCTOKIT.rateLimit.get();
     logger.debug(`Rate limit status: ${status.data.rate.remaining} remaining out of ${status.data.rate.limit}`);
     apiRemaining.push(status.data.rate.remaining);
 
-    //print warning if rate limit is low
+    // Print warning if rate limit is low
     if (status.data.rate.remaining < 300) {
         logger.warn('Warning: Rate limit is low. Test Suite uses ~ 250 calls. Consider using a different token.');
     }
@@ -67,8 +68,7 @@ async function runTests() {
     results.push(await NetScoreTest());
     apiRemaining.push((await OCTOKIT.rateLimit.get()).data.rate.remaining);
 
-
-    //calc used rate limit 📝
+    // Calc used rate limit 📝
     let usedRateLimit = apiRemaining[0] - apiRemaining[apiRemaining.length - 1];
     logger.debug(`Rate Limit Usage:`);
     logger.debug(`License Test: ${apiRemaining[0] - apiRemaining[1]}`);

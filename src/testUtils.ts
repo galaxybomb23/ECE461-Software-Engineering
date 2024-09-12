@@ -1,7 +1,5 @@
 import { logger } from "./Metrics.js";
 
-
-
 /**
  * Asserts that the actual value is equal to the expected value within a threshold.
  * 
@@ -23,6 +21,15 @@ export function ASSERT_EQ(actual: number, expected: number, testName: string = '
     }
 }
 
+/**
+ * Asserts that the actual value is near the expected value within a specified threshold.
+ * 
+ * @param actual - The actual value to compare.
+ * @param expected - The expected value.
+ * @param threshold - The threshold within which the actual value is considered near the expected value.e * @param testName - The name of the test (optional).
+ * @param testName - The name of the test
+ * @returns 1 if the assertion passes, 0 otherwise.
+ */
 export function ASSERT_NEAR(actual: number, expected: number, threshold: number, testName: string = ''): number {
     if (Math.abs(expected - actual) < threshold) {
         logger.debug(`${testName} : Passed :: Expected: ${expected}, Actual: ${actual}`);
