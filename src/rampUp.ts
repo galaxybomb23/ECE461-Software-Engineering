@@ -52,7 +52,7 @@ export class RampUp extends Metrics {
         const files = fs.readdirSync(cloneDir, { withFileTypes: true });
 
         for (const file of files) {
-            // Traverse the directory structure recursively if it's a directory
+            // Traverse the directory structure, recursively if it's a directory
             const filePath = path.join(cloneDir, file.name);
             if (file.isDirectory()) {
                 await this.processRepository(filePath);
@@ -92,13 +92,11 @@ export class RampUp extends Metrics {
             await this.cloneRepository(cloneDir);
             await this.processRepository(cloneDir);
 
-            // Calculate the ramp-up score based on processed metrics
             this.rampUp = this.calculateRampUpScore();
         } catch (error) {
             console.error('Error evaluating ramp-up:', error);
-            this.rampUp = -1; // On error, assume no ramp-up
+            this.rampUp = -1;
         } finally {
-            // Clean up: remove the cloned repository
             fs.rmSync(cloneDir, { recursive: true, force: true });
         }
 
