@@ -8,7 +8,7 @@ import axios from 'axios';
 import fs from 'fs';
 
 // Proprietaries
-import { OCTOKIT } from './Metrics.js';
+import { Metrics, OCTOKIT } from './Metrics.js';
 import { NetScore } from './netScore.js';
 // Tests
 import { BusFactorTest } from './busFactor.js';
@@ -162,25 +162,31 @@ async function processUrls(filePath: string): Promise<void> {
         fs.appendFileSync('logs/run.log', "NetScores: \n");
         fs.appendFileSync('logs/run.log', netScore.toString() + '\n');
     }
+
+
 }
 
 /**
  * The main function. Handles command line arguments and executes the appropriate functions.
  */
-function main() {
-    const argv = yargs(hideBin(process.argv))
-        .command('test', 'Run test suite', {}, () => {
-            runTests();
+
+async function main() {
+    let LOG_FILE: string = process.env.LOG_FILE || 'logs/run.log';
+    let LOG_LEVEL: number = Number(process.env.LOG_LEVEL) || 2;
+
+    const argv = await yargs(hideBin(process.argv))
+        .command('test', 'Run test suite', {}, async () => {
+            await runTests();
         })
         .command('$0 <file>', 'Process URLs from a file', (yargs) => {
             yargs.positional('file', {
                 describe: 'Path to the file containing URLs',
                 type: 'string'
             });
-        }, (argv) => {
+        }, async (argv) => {
             let filename: string = argv.file as string;
             if (fs.existsSync(filename)) {
-                processUrls(filename);
+                await processUrls(filename);
             } else {
                 console.error(`File not found: ${argv.file}`);
                 showUsage();
@@ -190,5 +196,12 @@ function main() {
         .help()
         .alias('help', 'h')
         .argv;
+
+    // if successful, write to log and exit
+    fs.appendFileSync(`${LOG_FILE}`, "Command: \n");
+    fs.appendFileSync(`${LOG_FILE}`, process.argv + '\n');
+    fs.appendFileSync(`${LOG_FILE}`, "Results: \n");
+    fs.appendFileSync(`${LOG_FILE}`, argv + '\n');
+    process.exit(0);
 }
 main();

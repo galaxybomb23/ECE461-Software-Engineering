@@ -28,7 +28,7 @@ def run_install() -> int:
         print(output)
     url_file_rc, output = url_file.run()
     if not url_file_rc:
-        print(output)
+        print(f"url_file run output:",output)
     total_correct = install_rc + test_suite_rc + url_file_rc
 
     print_test_result("> Install command %s successfully!", install_rc, "exited", "did not exit")
@@ -147,9 +147,6 @@ def run_test_suite() -> int:
 #   absolute path at runtime, or using a relative path to it
 # - Note the difference between what is output to stdout and what is supposed to be returned from each command
 def main():
-    
-    #print working directory
-    print(f"Current working directory: {os.getcwd()}")
     
     #Setup ENV for testing
     os.environ['GITHUB_TOKEN'] = GITHUB_TOKEN

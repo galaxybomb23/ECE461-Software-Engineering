@@ -16,6 +16,8 @@ export let OCTOKIT: Octokit = new Octokit({ auth: githubToken, });
  * @abstract
  */
 export abstract class Metrics {
+    public LOG_LEVEL: number = Number(process.env.LOG_LEVEL) || 2;
+    public LOG_FILE: string = process.env.LOG_FILE || 'logs/run.log';
     public responseTime: number = 0;
     public octokit: Octokit = OCTOKIT;
     protected url: string;
