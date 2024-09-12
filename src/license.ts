@@ -4,7 +4,7 @@ import * as path from 'path';
 import http from 'isomorphic-git/http/node/index.cjs';
 import * as fs from 'fs';
 import { performance } from 'perf_hooks';
-import { Metrics } from './Metrics.js';
+import { Metrics, logger } from './Metrics.js';
 import { ASSERT_EQ } from './testUtils.js';
 
 /**
@@ -130,21 +130,21 @@ export async function LicenseTest(): Promise<{ passed: number, failed: number }>
     let license = new License('https://github.com/cloudinary/cloudinary_npm');
     let result = await license.evaluate();
     ASSERT_EQ(result, 1, "License Test 1") ? testsPassed++ : testsFailed++;
-    console.log(`Response time: ${license.responseTime.toFixed(6)}s\n`);
+    logger.debug(`Response time: ${license.responseTime.toFixed(6)}s`);
     licenses.push(license);
 
     //second test
     license = new License('https://github.com/nullivex/nodist');
     result = await license.evaluate();
     ASSERT_EQ(result, 1, "License Test 2") ? testsPassed++ : testsFailed++;
-    console.log(`Response time: ${license.responseTime.toFixed(6)}s\n`);
+    logger.debug(`Response time: ${license.responseTime.toFixed(6)}s`);
     licenses.push(license);
 
     //third test
     license = new License('https://github.com/lodash/lodash');
     result = await license.evaluate();
     ASSERT_EQ(result, 1, "License Test 3") ? testsPassed++ : testsFailed++;
-    console.log(`Response time: ${license.responseTime.toFixed(6)}s\n`);
+    logger.debug(`Response time: ${license.responseTime.toFixed(6)}s`);
     licenses.push(license);
 
     return { passed: testsPassed, failed: testsFailed };

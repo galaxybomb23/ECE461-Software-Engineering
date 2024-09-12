@@ -1,5 +1,5 @@
 
-import { Metrics } from './Metrics.js';
+import { Metrics, logger } from './Metrics.js';
 import { performance } from 'perf_hooks';
 import { ASSERT_EQ, ASSERT_LT } from './testUtils.js';
 
@@ -91,7 +91,7 @@ export async function RampUpTest(): Promise<{ passed: number, failed: number }> 
         let result = await rampUp.evaluate();
         ASSERT_EQ(result, test.expectedRampUp, `RampUp Test for ${test.url}`) ? testsPassed++ : testsFailed++;
         ASSERT_LT(rampUp.responseTime, 0.004, `RampUp Response Time Test for ${test.url}`) ? testsPassed++ : testsFailed++;
-        console.log(`Ramp Up Response time: ${rampUp.responseTime.toFixed(6)}s\n`);
+        logger.debug(`Ramp Up Response time: ${rampUp.responseTime.toFixed(6)}s\n`);
 
         rampUps.push(rampUp);
     }

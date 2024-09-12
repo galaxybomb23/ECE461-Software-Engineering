@@ -1,4 +1,4 @@
-import { Metrics } from "./Metrics.js";
+import { Metrics, logger } from "./Metrics.js";
 import { ASSERT_EQ, ASSERT_LT, ASSERT_NEAR } from './testUtils.js';
 
 
@@ -95,12 +95,12 @@ export async function MaintainabilityTest(): Promise<{ passed: number, failed: n
         let result = await maintainability.evaluate();
 
         let threshold: number = 0.1
-        
+
         ASSERT_NEAR(result, test.expectedMaintainability, threshold, `Maintainability Test for ${test.url}`) ? testsPassed++ : testsFailed++;
         
         ASSERT_LT(maintainability.responseTime, 0.004, `Maintainability Response_Time Test for ${test.url}`) ? testsPassed++ : testsFailed++;
 
-        console.log(`Maintainability Response time: ${maintainability.responseTime.toFixed(6)}s\n`);
+        logger.debug(`Maintainability Response time: ${maintainability.responseTime.toFixed(6)}s\n`);
 
         maintainabilityTests.push(maintainability);
     }

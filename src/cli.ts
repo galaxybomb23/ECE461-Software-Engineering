@@ -45,7 +45,7 @@ async function runTests() {
 
     // get token from environment variable
     let status = await OCTOKIT.rateLimit.get();
-    logger.info(`Rate limit status: ${status.data.rate.remaining} remaining out of ${status.data.rate.limit}`);
+    logger.debug(`Rate limit status: ${status.data.rate.remaining} remaining out of ${status.data.rate.limit}`);
     apiRemaining.push(status.data.rate.remaining);
 
     //print warning if rate limit is low
@@ -70,14 +70,14 @@ async function runTests() {
 
     //calc used rate limit 📝
     let usedRateLimit = apiRemaining[0] - apiRemaining[apiRemaining.length - 1];
-    logger.info(`Rate Limit Usage:`);
-    logger.info(`License Test: ${apiRemaining[0] - apiRemaining[1]}`);
-    logger.info(`Bus Factor Test: ${apiRemaining[1] - apiRemaining[2]}`);
-    logger.info(`Correctness Test: ${apiRemaining[2] - apiRemaining[3]}`);
-    logger.info(`Ramp Up Test: ${apiRemaining[3] - apiRemaining[4]}`);
-    logger.info(`Maintainability Test: ${apiRemaining[4] - apiRemaining[5]}`);
-    logger.info(`Net Score Test: ${apiRemaining[5] - apiRemaining[6]}`);
-    logger.info(`Total Rate Limit Used: ${usedRateLimit}`);
+    logger.debug(`Rate Limit Usage:`);
+    logger.debug(`License Test: ${apiRemaining[0] - apiRemaining[1]}`);
+    logger.debug(`Bus Factor Test: ${apiRemaining[1] - apiRemaining[2]}`);
+    logger.debug(`Correctness Test: ${apiRemaining[2] - apiRemaining[3]}`);
+    logger.debug(`Ramp Up Test: ${apiRemaining[3] - apiRemaining[4]}`);
+    logger.debug(`Maintainability Test: ${apiRemaining[4] - apiRemaining[5]}`);
+    logger.debug(`Net Score Test: ${apiRemaining[5] - apiRemaining[6]}`);
+    logger.debug(`Total Rate Limit Used: ${usedRateLimit}`);
 
     // Display test results
     results.forEach((result, index) => {

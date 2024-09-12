@@ -14,6 +14,10 @@ const logLevel = process.env.LOG_LEVEL;
 if (!logLevel) {
     throw new Error('LOG_LEVEL is not defined in the .env file')
 }
+const logFile = process.env.LOG_FILE;
+if (!logFile) {
+    throw new Error('LOG_FILE is not defined in the .env file')
+}
 
 export let OCTOKIT: Octokit = new Octokit({ auth: githubToken, });
 
@@ -25,7 +29,7 @@ export let logger: Logger = createLogger({
     ),
     transports: [
       new transports.Console(), // Log to console
-      new transports.File({ filename: 'application.log' }) // Log to a file
+      new transports.File({ filename: logFile }) // Log to a file
     ],
   });
 
@@ -36,7 +40,6 @@ export let logger: Logger = createLogger({
 export abstract class Metrics {
     public responseTime: number = 0;
     public octokit: Octokit = OCTOKIT;
-    public logger: Logger = logger;
 
     protected url: string;
     protected owner: string;

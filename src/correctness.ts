@@ -1,5 +1,5 @@
 
-import { Metrics } from './Metrics.js';
+import { Metrics, logger } from './Metrics.js';
 import { performance } from 'perf_hooks';
 import { ASSERT_EQ } from './testUtils.js';
 
@@ -114,21 +114,21 @@ export async function CorrectnessTest(): Promise<{ passed: number, failed: numbe
     const result: number = await correctness.evaluate();
     const expectedValue = 0.933333333; // Expected value is 0.93333...
     ASSERT_EQ(result, expectedValue, 'Correctness test 1') ? testsPassed++ : testsFailed++;
-    console.log(`Response time: ${correctness.responseTime.toFixed(6)}s\n`);
+    logger.debug(`Response time: ${correctness.responseTime.toFixed(6)}s\n`);
 
     // Test 2
     const correctness2 = new Correctness('https://github.com/nullivex/nodist');
     const result2: number = await correctness2.evaluate();
     const expectedValue2 = 0.90909091; // Expected value is 0.90909091
     ASSERT_EQ(result2, expectedValue2, 'Correctness test 2') ? testsPassed++ : testsFailed++;
-    console.log(`Response time: ${correctness2.responseTime.toFixed(6)}s\n`);
+    logger.debug(`Response time: ${correctness2.responseTime.toFixed(6)}s\n`);
 
     // Test 3
     const correctness3 = new Correctness('https://github.com/Coop8/Coop8');
     const result3: number = await correctness3.evaluate();
     const expectedValue3 = 1; // Expected value is 1
     ASSERT_EQ(result3, expectedValue3, 'Correctness test 3') ? testsPassed++ : testsFailed++;
-    console.log(`Response time: ${correctness3.responseTime.toFixed(6)}s\n`);
+    logger.debug(`Response time: ${correctness3.responseTime.toFixed(6)}s\n`);
 
     return { passed: testsPassed, failed: testsFailed };
 }

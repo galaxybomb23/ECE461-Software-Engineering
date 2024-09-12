@@ -14,7 +14,7 @@ export function ASSERT_EQ(actual: number, expected: number, testName: string = '
     let threshold = 0.01;
 
     if (Math.abs(expected - actual) < threshold) {
-        logger.info(`${testName} : Passed :: Expected: ${expected}, Actual: ${actual}`);
+        logger.debug(`${testName} : Passed :: Expected: ${expected}, Actual: ${actual}`);
         return 1;
     }
     else {
@@ -25,7 +25,7 @@ export function ASSERT_EQ(actual: number, expected: number, testName: string = '
 
 export function ASSERT_NEAR(actual: number, expected: number, threshold: number, testName: string = ''): number {
     if (Math.abs(expected - actual) < threshold) {
-        logger.info(`${testName} : Passed :: Expected: ${expected}, Actual: ${actual}`);
+        logger.debug(`${testName} : Passed :: Expected: ${expected}, Actual: ${actual}`);
         return 1;
     }
     else {
@@ -46,7 +46,7 @@ export function ASSERT_LT(actual: number, expected: number, testName: string = '
     let threshold = 0.005;
 
     if (actual < (expected + threshold)) {
-        logger.info(`${testName} : Passed :: Expected: ${expected}, Actual: ${actual}`);
+        logger.debug(`${testName} : Passed :: Expected: ${expected}, Actual: ${actual}`);
         return 1;
     }
     else {
@@ -67,7 +67,7 @@ export function ASSERT_GT(actual: number, expected: number, testName: string = '
     let threshold = 0.01;
 
     if (actual > (expected - threshold)) {
-        logger.info(`${testName} : Passed :: Expected: ${expected}, Actual: ${actual}`);
+        logger.debug(`${testName} : Passed :: Expected: ${expected}, Actual: ${actual}`);
         return 1;
     }
     else {

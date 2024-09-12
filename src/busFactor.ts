@@ -1,6 +1,6 @@
 
 import { performance } from "perf_hooks";
-import { Metrics } from "./Metrics.js";
+import { Metrics, logger } from "./Metrics.js";
 import { ASSERT_EQ, ASSERT_LT } from "./testUtils.js";
 
 /**
@@ -116,7 +116,7 @@ export async function BusFactorTest(): Promise<{ passed: number, failed: number 
     let result = await busFactor.evaluate();
     ASSERT_EQ(result, 0.15, "Bus Factor Test 1") ? testsPassed++ : testsFailed++;
     ASSERT_LT(busFactor.responseTime, 0.004, "Bus Factor Response Time Test 1") ? testsPassed++ : testsFailed++;
-    console.log(`Response time: ${busFactor.responseTime.toFixed(6)}s\n`);
+    logger.debug(`Response time: ${busFactor.responseTime.toFixed(6)}s`);
     busFactors.push(busFactor);
 
 
@@ -125,7 +125,7 @@ export async function BusFactorTest(): Promise<{ passed: number, failed: number 
     result = await busFactor.evaluate();
     ASSERT_EQ(result, 0.07, "Bus Factor Test 2") ? testsPassed++ : testsFailed++;
     ASSERT_LT(busFactor.responseTime, 0.002, "Bus Factor Response Time Test 2") ? testsPassed++ : testsFailed++;
-    console.log(`Response time: ${busFactor.responseTime.toFixed(6)}s\n`);
+    logger.debug(`Response time: ${busFactor.responseTime.toFixed(6)}s`);
     busFactors.push(busFactor);
 
     //third test
@@ -133,7 +133,7 @@ export async function BusFactorTest(): Promise<{ passed: number, failed: number 
     result = await busFactor.evaluate();
     ASSERT_EQ(result, 0.02, "Bus Factor Test 3") ? testsPassed++ : testsFailed++;
     ASSERT_LT(busFactor.responseTime, 0.084, "Bus Factor Response Time Test 3") ? testsPassed++ : testsFailed++;
-    console.log(`Response time: ${busFactor.responseTime.toFixed(6)}s\n`);
+    logger.debug(`Response time: ${busFactor.responseTime.toFixed(6)}s`);
     busFactors.push(busFactor);
 
     return { passed: testsPassed, failed: testsFailed };
