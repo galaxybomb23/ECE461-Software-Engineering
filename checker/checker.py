@@ -161,16 +161,22 @@ def main():
     # Run install test
     print(f"{BOLD}{BLUE}Testing './run install'...{RESET}")
     total_correct = run_install()
+    if total_correct <3:
+        exit(1)
     print(f"{BOLD}{YELLOW if total_correct < 3 else GREEN} {total_correct} / 3 tests passed.{RESET}\n")
 
     # Run test_suite test
     print(f"{BOLD}{BLUE}Testing './run test'...{RESET}")
     total_correct = run_test_suite()
+    if total_correct<4:
+        exit(1)
     print(f"{BOLD}{YELLOW if total_correct < 4 else GREEN} {total_correct} / 4 tests passed.{RESET}\n")
 
     # Run url_file test
     print(f"{BOLD}{BLUE}Testing './run URL_FILE'...{RESET}")
     total_correct = run_urlfile()
+    if total_correct <5:
+        exit(1)
     print(f"{BOLD}{YELLOW if total_correct < 5 else GREEN} {total_correct} / 5 tests passed.{RESET}\n")
 
 if __name__ == "__main__":
