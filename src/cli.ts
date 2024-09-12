@@ -9,7 +9,7 @@ import redline from 'readline';
 import fs from 'fs';
 
 //##proprietaries##
-import { OCTOKIT } from './Metrics.js';
+import { OCTOKIT, logger } from './Metrics.js';
 import { NetScore } from './netScore.js';
 //tests
 import { BusFactorTest } from './busFactor.js';
@@ -33,22 +33,24 @@ function showUsage() {
     ./run test                      # Run test suite`);
 }
 
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 async function runTests() {
     let passedTests = 0;
     let failedTests = 0;
     let results: { passed: number, failed: number }[] = [];
     let apiRemaining: number[] = [];
-    console.log('Running tests...');
-    console.log('Checking environment variables...');
+    logger.info('Running tests...');
+    logger.info('Checking environment variables...');
 
     // get token from environment variable
     let status = await OCTOKIT.rateLimit.get();
-    console.log(`Rate limit status: ${status.data.rate.remaining} remaining out of ${status.data.rate.limit}`);
+    logger.info(`Rate limit status: ${status.data.rate.remaining} remaining out of ${status.data.rate.limit}`);
     apiRemaining.push(status.data.rate.remaining);
 
     //print warning if rate limit is low
     if (status.data.rate.remaining < 300) {
-        console.log('\x1b[1;33mWarning: Rate limit is low. Test Suite uses ~ 250 calls. Consider using a different token.\x1b[0m');
+        logger.warn('\x1b[1;33mWarning: Rate limit is low. Test Suite uses ~ 250 calls. Consider using a different token.\x1b[0m');
     }
 
     // Run tests
@@ -83,20 +85,22 @@ async function runTests() {
         failedTests += result.failed;
     });
 
-    console.log(`\x1b[1;32mTests Passed: ${passedTests}\x1b[0m`);
-    console.log(`\x1b[1;31mTests Failed: ${failedTests}\x1b[0m`);
-    console.log('\x1b[1;34mTests complete\x1b[0m');
+    logger.info(`Tests Passed: ${passedTests}`);
+    logger.info(`Tests Failed: ${failedTests}`);
+    logger.info("Tests complete");
 
-    //if more than 5% of the tests fail, exit with error
-    if (failedTests / (passedTests + failedTests) > 0.05) {
-        console.log('\x1b[1;31mError: More than 5% of tests failed. Exiting with error code 1.\x1b[0m');
+    if (failedTests / (passedTests + failedTests) > 0.05) {      //if more than 5% of the tests fail, exit with error
+        logger.error('Error: More than 5% of tests failed. Exiting with error code 1');
+        await sleep(1000);
         exit(1);
     }
+    await sleep(1000);
+    exit(0);
 }
 
 // Placeholder function for processing URLs
 function processUrls(urlFile: string) {
-    console.log(`Processing URLs from file: ${urlFile}`);
+    logger.info(`Processing URLs from file: ${urlFile}`);
     // Implement URL processing logic here
 }
 
