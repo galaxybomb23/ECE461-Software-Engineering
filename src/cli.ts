@@ -1,16 +1,15 @@
 #!/usr/bin/env node
 
+// External dependencies
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import dotenv from 'dotenv';
-import test from 'node:test';
-import redline from 'readline';
 import fs from 'fs';
 
-//##proprietaries##
+// Propietary code
 import { OCTOKIT } from './Metrics.js';
-import { NetScore } from './netScore.js';
-//tests
+
+// Tests
 import { BusFactorTest } from './busFactor.js';
 import { CorrectnessTest } from './correctness.js';
 import { LicenseTest } from './license.js';

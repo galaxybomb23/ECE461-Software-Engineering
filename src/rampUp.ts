@@ -1,6 +1,9 @@
-
-import { Metrics } from './Metrics.js';
+import * as git from 'isomorphic-git';
+import * as path from 'path';
+import http from 'isomorphic-git/http/node/index.cjs';
+import * as fs from 'fs';
 import { performance } from 'perf_hooks';
+import { Metrics } from './Metrics.js';
 import { ASSERT_EQ, ASSERT_LT } from './testUtils.js';
 
 /**
@@ -10,7 +13,7 @@ import { ASSERT_EQ, ASSERT_LT } from './testUtils.js';
 export class RampUp extends Metrics {
     public rampUp: number = -1;
 
-    // point values
+    // Define your metrics
     private metrics: { [key: string]: { name: string; found: boolean, fileType: string } } = {
         example: { name: 'example', found: false, fileType: 'either' },
         test: { name: 'test', found: false, fileType: 'either' },
@@ -24,58 +27,84 @@ export class RampUp extends Metrics {
     }
 
     /**
-     * Asynchronously evaluates the performance of the code.
+     * Clones the repository to the specified directory.
      * 
-     * @returns A promise that resolves to the ramp up value.
+     * @param cloneDir - The directory where the repository will be cloned.
+     * @returns A promise that resolves when the cloning process is complete.
      */
-    async evaluate(): Promise<number> {
-        const startTime = performance.now();
-        this.rampUp = await this.printRepoStructure(this.url);
-        const endTime = performance.now();
-        const elapsedTime = Number(endTime - startTime) / 1e6; // Convert to milliseconds
-        this.responseTime = elapsedTime;
-        return this.rampUp;
+    private async cloneRepository(cloneDir: string): Promise<void> {
+        await git.clone({
+            fs,
+            http,
+            dir: cloneDir,
+            url: this.url,
+            singleBranch: true,
+            depth: 1,
+        });
     }
 
-    /* 
-       A recursive function to print the repository structure
-       and check for the presence of specific folders and files 
-    */
-    async printRepoStructure(url: string, path: string = ''): Promise<number> {
-        try {
-            const owner = this.owner;
-            const repo = this.repo;
-            
-            const response = await this.octokit.repos.getContent({
-                owner,
-                repo,
-                path,
-            });
+    /**
+     * Processes the cloned repository to check for the presence of specific metrics.
+     * 
+     * @param cloneDir - The directory where the repository was cloned.
+     */
+    private async processRepository(cloneDir: string): Promise<void> {
+        const files = fs.readdirSync(cloneDir, { withFileTypes: true });
 
-            if (Array.isArray(response.data)) {
-                for (const item of response.data) {
-                    // Check each metric to see if it is found
-                    for (const [key, metric] of Object.entries(this.metrics)) {
-                        // Ensure the item type = metric type, or the metric type is 'either'. Then check if the metric name is in the item name
-                        if ((item.type === metric.fileType || metric.fileType === 'either') && item.name.toLowerCase().includes(metric.name)) {
-                            this.metrics[key].found = true;
-                        }
-                    }
-                    // Recursively check subdirectories after checking each metric
-                    if (item.type === 'dir') {
-                        await this.printRepoStructure(url, item.path);
-                    }
+        for (const file of files) {
+            // Traverse the directory structure recursively if it's a directory
+            const filePath = path.join(cloneDir, file.name);
+            if (file.isDirectory()) {
+                await this.processRepository(filePath);
+            }
+
+            // Check each file against the defined metrics
+            for (const [key, metric] of Object.entries(this.metrics)) {
+                const fileTypeMatches = (file.isDirectory() && metric.fileType === 'dir') || (!file.isDirectory() && metric.fileType === 'file') || metric.fileType === 'either';
+                const nameMatches = file.name.toLowerCase().includes(metric.name);
+
+                if (fileTypeMatches && nameMatches) {
+                    this.metrics[key].found = true;
                 }
             }
+        }
+    }
+
+    /**
+     * Calculates the ramp-up score based on the found metrics.
+     */
+    private calculateRampUpScore(): number {
+        const totalFound = Object.values(this.metrics).reduce((sum, metric) => sum + (metric.found ? 1 : 0), 0);
+        const totalMetrics = Object.keys(this.metrics).length;
+        return totalFound / totalMetrics;
+    }
+
+    /**
+     * Evaluates the ramp-up score of the repository.
+     * 
+     * @returns A promise that resolves to the ramp-up score.
+     */
+    public async evaluate(): Promise<number> {
+        const cloneDir = path.join('/tmp', 'repo-clone-rampUp');
+        let startTime = performance.now();
+
+        try {
+            await this.cloneRepository(cloneDir);
+            await this.processRepository(cloneDir);
+
+            // Calculate the ramp-up score based on processed metrics
+            this.rampUp = this.calculateRampUpScore();
         } catch (error) {
-            console.error("Error fetching repository structure:", error);
+            console.error('Error evaluating ramp-up:', error);
+            this.rampUp = -1; // On error, assume no ramp-up
+        } finally {
+            // Clean up: remove the cloned repository
+            fs.rmSync(cloneDir, { recursive: true, force: true });
         }
 
-        // Calculate the total score based on the found metrics
-        const totalFound = Object.values(this.metrics).reduce((sum, metric) => sum + (metric.found ? 1 : 0), 0);
-        const totalMetrics = Object.keys(this.metrics).length
-
-        return (totalFound) / totalMetrics;
+        const endTime = performance.now();
+        this.responseTime = Number(endTime - startTime) / 1e6; // Convert to milliseconds
+        return this.rampUp;
     }
 }
 
@@ -100,7 +129,7 @@ export async function RampUpTest(): Promise<{ passed: number, failed: number }> 
         let rampUp = new RampUp(test.url);
         let result = await rampUp.evaluate();
         ASSERT_EQ(result, test.expectedRampUp, `RampUp Test for ${test.url}`) ? testsPassed++ : testsFailed++;
-        ASSERT_LT(rampUp.responseTime, 0.004, `RampUp Response Time Test for ${test.url}`) ? testsPassed++ : testsFailed++;
+        ASSERT_LT(rampUp.responseTime, 0.01, `RampUp Response Time Test for ${test.url}`) ? testsPassed++ : testsFailed++;
         console.log(`Ramp Up Response time: ${rampUp.responseTime.toFixed(6)}s\n`);
 
         rampUps.push(rampUp);

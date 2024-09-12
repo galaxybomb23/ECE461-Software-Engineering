@@ -34,7 +34,7 @@ export abstract class Metrics {
         return { owner: match[1], repo: match[2] };
     }
 
-    abstract evaluate(): Promise<number>;
+    abstract evaluate(options?: { cloneDir?: string }): Promise<number>;
 
     public async getRateLimitStatus() {
         const rateLimit = await OCTOKIT.rateLimit.get();

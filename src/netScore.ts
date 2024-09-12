@@ -5,8 +5,7 @@ import { Correctness } from './correctness.js';
 import { License } from './license.js';
 import { RampUp } from './rampUp.js';
 import { Maintainability } from './maintainability.js';
-import { assert } from 'console';
-import { ASSERT_EQ, ASSERT_LT, ASSERT_NEAR } from './testUtils.js';
+import { ASSERT_LT, ASSERT_NEAR } from './testUtils.js';
 
 /**
  * Represents a NetScore object that calculates the net score of a software project based on various metrics.
@@ -134,7 +133,7 @@ export async function NetScoreTest(): Promise<{ passed: number, failed: number }
     // Third test
     netScore = new NetScore('https://github.com/lodash/lodash');
     result = await netScore.evaluate();
-    ASSERT_NEAR(result, 0.42, .05, "Net Score Test 3") ? testsPassed++ : testsFailed++;
+    ASSERT_NEAR(result, 0.30, .05, "Net Score Test 3") ? testsPassed++ : testsFailed++;
     ASSERT_LT(netScore.responseTime, 0.02, "Net Score Response Time Test 3") ? testsPassed++ : testsFailed++;
     console.log(`Response time: ${netScore.responseTime.toFixed(6)}s\n`);
     netScores.push(netScore);

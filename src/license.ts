@@ -108,7 +108,7 @@ export class License extends Metrics {
      */
     public async evaluate(): Promise<number> {
 
-        const cloneDir = path.join('/tmp', 'repo-clone');
+        const cloneDir = path.join('/tmp', 'repo-clon-license');
         let startTime = performance.now();
         try {
             await this.cloneRepository(cloneDir);
