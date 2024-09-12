@@ -29,7 +29,7 @@ jobs:
 
       - name: Setup .env file
         run: |
-          echo "API_TOKEN=${{ secrets.API_TOKEN }}" >> .env
+          echo "GITHUB_TOKEN=${{ secrets.API_TOKEN }}" >> .env
           cp .env checker/.env
 
       - name: Run checker script

@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 // Access the token value
-const githubToken = process.env.API_TOKEN;
+const githubToken = process.env.GITHUB_TOKEN;
 if (!githubToken) {
     throw new Error('API_TOKEN is not defined in the .env file');
 }
@@ -16,8 +16,6 @@ export let OCTOKIT: Octokit = new Octokit({ auth: githubToken, });
  * @abstract
  */
 export abstract class Metrics {
-    public LOG_LEVEL: number = Number(process.env.LOG_LEVEL) || 2;
-    public LOG_FILE: string = process.env.LOG_FILE || 'logs/run.log';
     public responseTime: number = 0;
     public octokit: Octokit = OCTOKIT;
     protected url: string;
