@@ -49,6 +49,7 @@ def run_urlfile() -> int:
     if url_file_rc:
         total_correct += 1
     else:
+        print(output)
         return 0
 
     is_valid_output = False
@@ -58,6 +59,7 @@ def run_urlfile() -> int:
             obj_keys = [x.lower() for x in ndjson_obj.keys()]
             is_valid_output = all(field.lower() in obj_keys for field in ALL_FIELDS)
     except Exception as e:
+        print(e, output)
         pass
 
     print_test_result("> URL_FILE output is %s NDJSON!", is_valid_output, "valid", "not valid")
@@ -110,6 +112,7 @@ def run_test_suite() -> int:
     if test_suite_match:
         total_correct += 1
     else:
+        print(output)
         return total_correct
         
     results = test_suite_regex.findall(output)

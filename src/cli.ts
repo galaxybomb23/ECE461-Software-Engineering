@@ -72,12 +72,13 @@ async function runTests() {
 
     // get token from environment variable
     let status = await OCTOKIT.rateLimit.get();
-    // console.log(`Rate limit status: ${status.data.rate.remaining} remaining out of ${status.data.rate.limit}`);
+    console.log(`Rate limit status: ${status.data.rate.remaining} remaining out of ${status.data.rate.limit}`);
     apiRemaining.push(status.data.rate.remaining);
 
     //print warning if rate limit is low
     if (status.data.rate.remaining < 300) {
         console.log('\x1b[1;33mWarning: Rate limit is low. Test Suite uses ~ 250 calls. Consider using a different token.\x1b[0m');
+        exit(1);
     }
 
     // Run tests
@@ -149,14 +150,17 @@ async function processUrls(filePath: string): Promise<void> {
     }
 
     // print the github urls
-    console.log('GitHub URLs:');
-    console.log(githubUrls);
+    // console.log('GitHub URLs:');
+    // console.log(githubUrls);
 
     // Process each GitHub URL
     for (const url of githubUrls) {
         const netScore = new NetScore(url);
         const result = await netScore.evaluate();
         process.stdout.write(netScore.toString() + '\n');
+        //write to a file in logging
+        fs.appendFileSync('logs/run.log', "NetScores: \n");
+        fs.appendFileSync('logs/run.log', netScore.toString() + '\n');
     }
 }
 
