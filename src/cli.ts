@@ -50,7 +50,7 @@ async function runTests() {
 
     //print warning if rate limit is low
     if (status.data.rate.remaining < 300) {
-        logger.warn('\x1b[1;33mWarning: Rate limit is low. Test Suite uses ~ 250 calls. Consider using a different token.\x1b[0m');
+        logger.warn('Warning: Rate limit is low. Test Suite uses ~ 250 calls. Consider using a different token.');
     }
 
     // Run tests
@@ -70,14 +70,14 @@ async function runTests() {
 
     //calc used rate limit 📝
     let usedRateLimit = apiRemaining[0] - apiRemaining[apiRemaining.length - 1];
-    console.log(`Rate Limit Usage:`);
-    console.log(`License Test: ${apiRemaining[0] - apiRemaining[1]}`);
-    console.log(`Bus Factor Test: ${apiRemaining[1] - apiRemaining[2]}`);
-    console.log(`Correctness Test: ${apiRemaining[2] - apiRemaining[3]}`);
-    console.log(`Ramp Up Test: ${apiRemaining[3] - apiRemaining[4]}`);
-    console.log(`Maintainability Test: ${apiRemaining[4] - apiRemaining[5]}`);
-    console.log(`Net Score Test: ${apiRemaining[5] - apiRemaining[6]}`);
-    console.log(`Total Rate Limit Used: ${usedRateLimit}`);
+    logger.info(`Rate Limit Usage:`);
+    logger.info(`License Test: ${apiRemaining[0] - apiRemaining[1]}`);
+    logger.info(`Bus Factor Test: ${apiRemaining[1] - apiRemaining[2]}`);
+    logger.info(`Correctness Test: ${apiRemaining[2] - apiRemaining[3]}`);
+    logger.info(`Ramp Up Test: ${apiRemaining[3] - apiRemaining[4]}`);
+    logger.info(`Maintainability Test: ${apiRemaining[4] - apiRemaining[5]}`);
+    logger.info(`Net Score Test: ${apiRemaining[5] - apiRemaining[6]}`);
+    logger.info(`Total Rate Limit Used: ${usedRateLimit}`);
 
     // Display test results
     results.forEach((result, index) => {

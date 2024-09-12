@@ -1,3 +1,4 @@
+import { logger } from "./Metrics.js";
 
 
 
@@ -13,24 +14,22 @@ export function ASSERT_EQ(actual: number, expected: number, testName: string = '
     let threshold = 0.01;
 
     if (Math.abs(expected - actual) < threshold) {
-        console.log(`\x1b[32m${testName}: Passed\x1b[0m`);
+        logger.info(`${testName} : Passed :: Expected: ${expected}, Actual: ${actual}`);
         return 1;
     }
-    else {//📝
-        console.error(`${testName}: Failed`);
-        console.error(`Expected: ${expected}, Actual: ${actual}`);
+    else {
+        logger.error(`${testName} : Failed :: Expected: ${expected}, Actual: ${actual}`);
         return 0;
     }
 }
 
 export function ASSERT_NEAR(actual: number, expected: number, threshold: number, testName: string = ''): number {
     if (Math.abs(expected - actual) < threshold) {
-        console.log(`\x1b[32m${testName}: Passed (Expected: ${expected}, Actual: ${actual})\x1b[0m`);
+        logger.info(`${testName} : Passed :: Expected: ${expected}, Actual: ${actual}`);
         return 1;
     }
     else {
-        console.error(`${testName}: Failed`);
-        console.error(`Expected: ${expected}, Actual: ${actual}`);
+        logger.error(`${testName}: Failed :: Expected: ${expected}, Actual: ${actual}`);
         return 0;
     }
 }
@@ -47,11 +46,11 @@ export function ASSERT_LT(actual: number, expected: number, testName: string = '
     let threshold = 0.005;
 
     if (actual < (expected + threshold)) {
-        console.log(`\x1b[32m${testName}:\tPassed\x1b[0m`);
+        logger.info(`${testName} : Passed :: Expected: ${expected}, Actual: ${actual}`);
         return 1;
     }
     else {
-        console.error(`${testName}:\tFailed\tExpected: ${expected}, Actual: ${actual}`);
+        logger.error(`${testName} : Failed :: Expected: ${expected}, Actual: ${actual}`);
         return 0;
     }
 }
@@ -68,15 +67,11 @@ export function ASSERT_GT(actual: number, expected: number, testName: string = '
     let threshold = 0.01;
 
     if (actual > (expected - threshold)) {
-        console.log(`\x1b[32m${testName}: Passed\x1b[0m`);
+        logger.info(`${testName} : Passed :: Expected: ${expected}, Actual: ${actual}`);
         return 1;
     }
     else {
-        console.error(`${testName}: Failed\tExpected: ${expected}, Actual: ${actual}`);
+        logger.error(`${testName} : Failed :: Expected: ${expected}, Actual: ${actual}`);
         return 0;
     }
 }
-
-
-
-

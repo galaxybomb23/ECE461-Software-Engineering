@@ -95,6 +95,7 @@ export async function MaintainabilityTest(): Promise<{ passed: number, failed: n
         let result = await maintainability.evaluate();
 
         let threshold: number = 0.1
+        
         ASSERT_NEAR(result, test.expectedMaintainability, threshold, `Maintainability Test for ${test.url}`) ? testsPassed++ : testsFailed++;
         
         ASSERT_LT(maintainability.responseTime, 0.004, `Maintainability Response_Time Test for ${test.url}`) ? testsPassed++ : testsFailed++;
