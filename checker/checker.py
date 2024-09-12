@@ -148,6 +148,9 @@ def run_test_suite() -> int:
 # - Note the difference between what is output to stdout and what is supposed to be returned from each command
 def main():
     
+    #print working directory
+    print(f"Current working directory: {os.getcwd()}")
+    
     #Setup ENV for testing
     os.environ['GITHUB_TOKEN'] = GITHUB_TOKEN
     os.environ['LOG_LEVEL'] = str(LOG_LEVEL)
