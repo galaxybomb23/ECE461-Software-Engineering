@@ -4,7 +4,6 @@ import * as path from 'path';
 import http from 'isomorphic-git/http/node/index.cjs';
 import * as fs from 'fs';
 import { performance } from 'perf_hooks';
-import { Metrics } from './Metrics.js';
 import { ASSERT_EQ, ASSERT_LT } from './testUtils.js';
 
 /**
