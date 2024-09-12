@@ -7,7 +7,8 @@ LOG_FILE = os.getenv("LOG_FILE", "/tmp/checker.log")
 LOG_LEVEL = os.getenv("LOG_LEVEL", 2)
 
 # Repository location
-REPO_PATH = "/mnt/c/Users/Elija/Documents/GitHub/ECE461-Software-Engineering"
+
+REPO_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 
 
 
