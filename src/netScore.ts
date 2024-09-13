@@ -8,8 +8,6 @@ import { Maintainability } from './maintainability.js';
 import { assert } from 'console';
 import { ASSERT_EQ, ASSERT_LT, ASSERT_NEAR } from './testUtils.js';
 
-import { ASSERT_LT, ASSERT_NEAR } from './testUtils.js';
-
 /**
  * Represents a NetScore object that calculates the net score of a software project based on various metrics.
  * @extends Metrics
