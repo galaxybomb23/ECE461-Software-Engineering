@@ -85,22 +85,26 @@ def run_urlfile() -> int:
         total_correct += 1
     
     os.environ["LOG_FILE"] = ""
-    url_file = CLI_CMD_WRAPPER("./run one-url.txt")
+    command = f"./run {ONE_URL}"
+    url_file = CLI_CMD_WRAPPER(command)
     url_file_rc, output = url_file.run()
     print_test_result("> URL_FILE command %s successfully when LOG_FILE is not set!", not url_file_rc, "did not exit", "exited")
     if not url_file_rc:
         total_correct += 1
     else:
+        print(command)
         print(output)
 
     os.environ["LOG_FILE"] = "/tmp/log"
     os.environ["GITHUB_TOKEN"] = ""
-    url_file = CLI_CMD_WRAPPER("./run one-url.txt")
+    command = f"./run {ONE_URL}"
+    url_file = CLI_CMD_WRAPPER(command)
     url_file_rc, output = url_file.run()
     print_test_result("> URL_FILE command %s successfully when GITHUB_TOKEN is not set!", not url_file_rc, "did not exit", "exited")
     if not url_file_rc:
         total_correct += 1
     else:
+        print(command)
         print(output)
     
     return total_correct
