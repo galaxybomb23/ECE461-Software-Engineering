@@ -1,7 +1,6 @@
 import { Octokit } from '@octokit/rest';
 import { createLogger, format, Logger, transports } from 'winston';
 import dotenv from 'dotenv';
-import { log } from 'node:console';
 
 dotenv.config();
 
