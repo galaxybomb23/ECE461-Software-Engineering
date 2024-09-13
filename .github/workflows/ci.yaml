@@ -20,13 +20,12 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '22.8.0' # Or whatever version you are using
+          node-version: '18.x' # Or whatever version you are using
 
-      - name: Setup .env file
+      - name: Setup .env file and Install Dependencies
         run: |
-            echo "API_TOKEN=${{ secrets.API_TOKEN }}" >> .env
-
-        run: ./run install
+          echo "API_TOKEN=${{ secrets.API_TOKEN }}" >> .env
+          ./run install
 
       - name: Run tests
         run: ./run test
