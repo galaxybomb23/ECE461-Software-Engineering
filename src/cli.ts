@@ -6,10 +6,9 @@ import { hideBin } from 'yargs/helpers';
 import dotenv from 'dotenv';
 import fs from 'fs';
 
-// Propietary code
-import { OCTOKIT } from './Metrics.js';
+import { OCTOKIT, logger } from './Metrics.js';
+import { NetScore } from './netScore.js';
 
-// Tests
 import { BusFactorTest } from './busFactor.js';
 import { CorrectnessTest } from './correctness.js';
 import { LicenseTest } from './license.js';
@@ -30,6 +29,8 @@ function showUsage() {
     ./run test                      # Run test suite`);
 }
 
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 /**
  * Runs the tests and displays the results.
  * 
@@ -40,17 +41,17 @@ async function runTests() {
     let failedTests = 0;
     let results: { passed: number, failed: number }[] = [];
     let apiRemaining: number[] = [];
-    console.log('Running tests...');
-    console.log('Checking environment variables...');
+    logger.info('Running tests...');
+    logger.info('Checking environment variables...');
 
     // Get token from environment variable
     let status = await OCTOKIT.rateLimit.get();
-    console.log(`Rate limit status: ${status.data.rate.remaining} remaining out of ${status.data.rate.limit}`);
+    logger.debug(`Rate limit status: ${status.data.rate.remaining} remaining out of ${status.data.rate.limit}`);
     apiRemaining.push(status.data.rate.remaining);
 
     // Print warning if rate limit is low
     if (status.data.rate.remaining < 300) {
-        console.log('\x1b[1;33mWarning: Rate limit is low. Test Suite uses ~ 250 calls. Consider using a different token.\x1b[0m');
+        logger.warn('Warning: Rate limit is low. Test Suite uses ~ 250 calls. Consider using a different token.');
     }
 
     // Run tests
@@ -69,14 +70,14 @@ async function runTests() {
 
     // Calc used rate limit 📝
     let usedRateLimit = apiRemaining[0] - apiRemaining[apiRemaining.length - 1];
-    console.log(`Rate Limit Usage:`);
-    console.log(`License Test: ${apiRemaining[0] - apiRemaining[1]}`);
-    console.log(`Bus Factor Test: ${apiRemaining[1] - apiRemaining[2]}`);
-    console.log(`Correctness Test: ${apiRemaining[2] - apiRemaining[3]}`);
-    console.log(`Ramp Up Test: ${apiRemaining[3] - apiRemaining[4]}`);
-    console.log(`Maintainability Test: ${apiRemaining[4] - apiRemaining[5]}`);
-    console.log(`Net Score Test: ${apiRemaining[5] - apiRemaining[6]}`);
-    console.log(`Total Rate Limit Used: ${usedRateLimit}`);
+    logger.debug(`Rate Limit Usage:`);
+    logger.debug(`License Test: ${apiRemaining[0] - apiRemaining[1]}`);
+    logger.debug(`Bus Factor Test: ${apiRemaining[1] - apiRemaining[2]}`);
+    logger.debug(`Correctness Test: ${apiRemaining[2] - apiRemaining[3]}`);
+    logger.debug(`Ramp Up Test: ${apiRemaining[3] - apiRemaining[4]}`);
+    logger.debug(`Maintainability Test: ${apiRemaining[4] - apiRemaining[5]}`);
+    logger.debug(`Net Score Test: ${apiRemaining[5] - apiRemaining[6]}`);
+    logger.debug(`Total Rate Limit Used: ${usedRateLimit}`);
 
     // Display test results
     results.forEach((result, index) => {
@@ -84,20 +85,22 @@ async function runTests() {
         failedTests += result.failed;
     });
 
-    console.log(`\x1b[1;32mTests Passed: ${passedTests}\x1b[0m`);
-    console.log(`\x1b[1;31mTests Failed: ${failedTests}\x1b[0m`);
-    console.log('\x1b[1;34mTests complete\x1b[0m');
+    logger.info(`Tests Passed: ${passedTests}`);
+    logger.info(`Tests Failed: ${failedTests}`);
+    logger.info("Tests complete");
 
-    // If more than 5% of the tests fail, exit with error
-    if (failedTests / (passedTests + failedTests) > 0.05) {
-        console.log('\x1b[1;31mError: More than 5% of tests failed. Exiting with error code 1.\x1b[0m');
+    if (failedTests / (passedTests + failedTests) > 0.05) {      //if more than 5% of the tests fail, exit with error
+        logger.error('Error: More than 5% of tests failed. Exiting with error code 1');
+        await sleep(1000);
         exit(1);
     }
+    await sleep(1000);
+    exit(0);
 }
 
 // Placeholder function for processing URLs
 function processUrls(urlFile: string) {
-    console.log(`Processing URLs from file: ${urlFile}`);
+    logger.info(`Processing URLs from file: ${urlFile}`);
     // Implement URL processing logic here
 }
 

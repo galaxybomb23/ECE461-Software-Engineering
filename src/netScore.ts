@@ -1,4 +1,4 @@
-import { Metrics } from './Metrics.js';
+import { Metrics, logger } from './Metrics.js';
 import { performance } from 'perf_hooks';
 import { BusFactor } from './busFactor.js';
 import { Correctness } from './correctness.js';
@@ -119,7 +119,7 @@ export async function NetScoreTest(): Promise<{ passed: number, failed: number }
     let result = await netScore.evaluate();
     ASSERT_NEAR(result, 0.65, .05, "Net Score Test 1") ? testsPassed++ : testsFailed++;
     ASSERT_LT(netScore.responseTime, 0.02, "Net Score Response Time Test 1") ? testsPassed++ : testsFailed++;
-    console.log(`Response time: ${netScore.responseTime.toFixed(6)}s\n`);
+    logger.debug(`Response time: ${netScore.responseTime.toFixed(6)}s`);
     netScores.push(netScore);
 
     // Second test
@@ -127,7 +127,7 @@ export async function NetScoreTest(): Promise<{ passed: number, failed: number }
     result = await netScore.evaluate();
     ASSERT_NEAR(result, 0.20, .05, "Net Score Test 2") ? testsPassed++ : testsFailed++;
     ASSERT_LT(netScore.responseTime, 0.02, "Net Score Response Time Test 2") ? testsPassed++ : testsFailed++;
-    console.log(`Response time: ${netScore.responseTime.toFixed(6)}s\n`);
+    logger.debug(`Response time: ${netScore.responseTime.toFixed(6)}s`);
     netScores.push(netScore);
 
     // Third test
@@ -135,7 +135,7 @@ export async function NetScoreTest(): Promise<{ passed: number, failed: number }
     result = await netScore.evaluate();
     ASSERT_NEAR(result, 0.30, .05, "Net Score Test 3") ? testsPassed++ : testsFailed++;
     ASSERT_LT(netScore.responseTime, 0.02, "Net Score Response Time Test 3") ? testsPassed++ : testsFailed++;
-    console.log(`Response time: ${netScore.responseTime.toFixed(6)}s\n`);
+    logger.debug(`Response time: ${netScore.responseTime.toFixed(6)}s`);
     netScores.push(netScore);
 
     return { passed: testsPassed, failed: testsFailed };

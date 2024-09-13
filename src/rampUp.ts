@@ -1,9 +1,9 @@
+import { Metrics, logger } from './Metrics.js';
 import * as git from 'isomorphic-git';
 import * as path from 'path';
 import http from 'isomorphic-git/http/node/index.cjs';
 import * as fs from 'fs';
 import { performance } from 'perf_hooks';
-import { Metrics } from './Metrics.js';
 import { ASSERT_EQ, ASSERT_LT } from './testUtils.js';
 
 /**
@@ -127,9 +127,8 @@ export async function RampUpTest(): Promise<{ passed: number, failed: number }> 
         let rampUp = new RampUp(test.url);
         let result = await rampUp.evaluate();
         ASSERT_EQ(result, test.expectedRampUp, `RampUp Test for ${test.url}`) ? testsPassed++ : testsFailed++;
-        ASSERT_LT(rampUp.responseTime, 0.01, `RampUp Response Time Test for ${test.url}`) ? testsPassed++ : testsFailed++;
-        console.log(`Ramp Up Response time: ${rampUp.responseTime.toFixed(6)}s\n`);
-
+        ASSERT_LT(rampUp.responseTime, 0.004, `RampUp Response Time Test for ${test.url}`) ? testsPassed++ : testsFailed++;
+        logger.debug(`Ramp Up Response time: ${rampUp.responseTime.toFixed(6)}s`);
         rampUps.push(rampUp);
     }
 
