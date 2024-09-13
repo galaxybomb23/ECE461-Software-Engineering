@@ -1,7 +1,6 @@
 import { Octokit } from '@octokit/rest';
 import { createLogger, format, Logger, transports } from 'winston';
 import dotenv from 'dotenv';
-import { log } from 'node:console';
 
 dotenv.config();
 
@@ -9,13 +8,15 @@ const githubToken = process.env.API_TOKEN;
 if (!githubToken) {
     throw new Error('API_TOKEN is not defined in the .env file');
 }
-const logLevel = process.env.LOG_LEVEL;
+let logLevel = process.env.LOG_LEVEL;
 if (!logLevel) {
-    throw new Error('LOG_LEVEL is not defined in the .env file')
+    logLevel = 'info';
+    // throw new Error('LOG_LEVEL is not defined in the .env file')
 }
-const logFile = process.env.LOG_FILE;
+let logFile = process.env.LOG_FILE;
 if (!logFile) {
-    throw new Error('LOG_FILE is not defined in the .env file')
+    logFile  = "log.log";
+    // throw new Error('LOG_FILE is not defined in the .env file')
 }
 
 export let OCTOKIT: Octokit = new Octokit({ auth: githubToken, });

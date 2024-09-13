@@ -26,7 +26,6 @@ jobs:
         run: |
             echo "API_TOKEN=${{ secrets.API_TOKEN }}" >> .env
 
-      - name: Install Node.js and dependencies
         run: ./run install
 
       - name: Run tests
