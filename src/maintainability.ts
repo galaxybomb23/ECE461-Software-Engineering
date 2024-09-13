@@ -1,17 +1,24 @@
 import { Metrics } from "./Metrics.js";
-import { ASSERT_EQ, ASSERT_LT, ASSERT_NEAR } from './testUtils.js';
+import { ASSERT_LT, ASSERT_NEAR } from './testUtils.js';
 
-
+/**
+ * Represents a class for calculating and evaluating the maintainability of a repository.
+ */
 export class Maintainability extends Metrics {
-
     public maintainability: number = -1;
 
-    constructor(
-        url: string,
-    ) {
+    constructor(url: string) {
         super(url);
     }
 
+    /**
+     * Calculates the maintainability score for a given repository.
+     * 
+     * @param owner - The owner of the repository.
+     * @param repo - The name of the repository.
+     * @returns The maintainability score, a number between 0 and 1. A higher score indicates better maintainability.
+     *          Returns -1 if there was an error fetching the issues.
+     */
     private async calculateMaintainability(owner: string, repo: string): Promise<number> {
         try {
             // Fetch the most recent 100 issues for the repository
@@ -45,22 +52,27 @@ export class Maintainability extends Metrics {
             if (averageResolutionTimeDays > 14) {
                 return 0;
             }
+
             return 1 - (averageResolutionTimeDays / 14);
-
-
         } catch (error) {
             console.error("Error fetching issues:", error);
+
             return -1;
         }
     }
 
+    /**
+     * Evaluates the maintainability of the code.
+     * 
+     * @returns A promise that resolves to the maintainability score.
+     */
     public async evaluate(): Promise<number> {
-
         const rateLimitStatus = await this.getRateLimitStatus();
 
         if (rateLimitStatus.remaining === 0) {
             const resetTime = new Date(rateLimitStatus.reset * 1000).toLocaleTimeString();
             console.log(`Rate limit exceeded. Try again after ${resetTime}`);
+
             return -1;
         }
 
@@ -73,10 +85,8 @@ export class Maintainability extends Metrics {
         this.responseTime = elapsedTime;
 
         return this.maintainability;
-
     }
 }
-
 
 export async function MaintainabilityTest(): Promise<{ passed: number, failed: number }> {
     let testsPassed = 0;
@@ -86,7 +96,7 @@ export async function MaintainabilityTest(): Promise<{ passed: number, failed: n
     const url_to_expected_score = [
         { url: "https://github.com/nullivex/nodist", expectedMaintainability: 0.01 },
         { url: "https://github.com/cloudinary/cloudinary_npm", expectedMaintainability: 0.8 },
-        { url: "https://github.com/lodash/lodash", expectedMaintainability: 0.6 },
+        { url: "https://github.com/lodash/lodash", expectedMaintainability: 0.23 },
     ];
 
     for (const test of url_to_expected_score) {

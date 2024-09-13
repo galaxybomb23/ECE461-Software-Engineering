@@ -1,4 +1,3 @@
-
 import { Octokit } from '@octokit/rest';
 import dotenv from 'dotenv';
 
@@ -9,7 +8,6 @@ if (!githubToken) {
     throw new Error('API_TOKEN is not defined in the .env file');
 }
 export let OCTOKIT: Octokit = new Octokit({ auth: githubToken, });
-
 
 /**
  * Represents a Metrics class.

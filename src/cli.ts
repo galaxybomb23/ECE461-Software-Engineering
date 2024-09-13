@@ -70,12 +70,12 @@ async function runTests() {
     console.log('Running tests...');
     console.log('Checking environment variables...');
 
-    // get token from environment variable
+    // Get token from environment variable
     let status = await OCTOKIT.rateLimit.get();
     console.log(`Rate limit status: ${status.data.rate.remaining} remaining out of ${status.data.rate.limit}`);
     apiRemaining.push(status.data.rate.remaining);
 
-    //print warning if rate limit is low
+    // Print warning if rate limit is low
     if (status.data.rate.remaining < 300) {
         console.log('\x1b[1;33mWarning: Rate limit is low. Test Suite uses ~ 250 calls. Consider using a different token.\x1b[0m');
         exit(1);
@@ -95,6 +95,7 @@ async function runTests() {
     results.push(await NetScoreTest());
     apiRemaining.push((await OCTOKIT.rateLimit.get()).data.rate.remaining);
 
+    // Calc used rate limit 📝
     // Calc used rate limit 📝
     let usedRateLimit = apiRemaining[0] - apiRemaining[apiRemaining.length - 1];
     console.log(`Rate Limit Usage:`);
