@@ -33,6 +33,8 @@ jobs:
       - name: Setup .env file
         run: |
           echo "GITHUB_TOKEN=${{ secrets.API_TOKEN }}" >> checker/.env
+          echo "LOG_LEVEL=2" >> checker/.env
+          echo "LOG_FILE=/tmp/checker.log" >> checker/.env
 
       - name: Run checker script
         run: python3 checker/checker.py
