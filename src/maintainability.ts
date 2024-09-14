@@ -55,8 +55,7 @@ export class Maintainability extends Metrics {
 
             return 1 - (averageResolutionTimeDays / 14);
         } catch (error) {
-            console.error("Error fetching issues:", error);
-
+            logger.error("Error fetching issues:", error);
             return -1;
         }
     }
@@ -110,7 +109,7 @@ export async function MaintainabilityTest(): Promise<{ passed: number, failed: n
         
         ASSERT_LT(maintainability.responseTime, 0.004, `Maintainability Response_Time Test for ${test.url}`) ? testsPassed++ : testsFailed++;
 
-        logger.debug(`Maintainability Response time: ${maintainability.responseTime.toFixed(6)}s\n`);
+        logger.debug(`Maintainability Response time: ${maintainability.responseTime.toFixed(6)}s`);
 
         maintainabilityTests.push(maintainability);
     }

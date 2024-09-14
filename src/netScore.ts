@@ -61,14 +61,7 @@ export class NetScore extends Metrics {
 
         // check if netscore is between 0 and 1
         if (this.netScore < 0 || this.netScore > 1) {
-            console.log(`NetScore out of bounds: ${this.netScore}`);
-
-            // print the metrics
-            console.log(`BusFactor: ${this.busFactor.busFactor}`);
-            console.log(`Correctness: ${this.correctness.correctness}`);
-            console.log(`RampUp: ${this.rampUp.rampUp}`);
-            console.log(`Maintainability: ${this.maintainability.maintainability}`);
-            console.log(`License: ${this.license.license}`);
+            logger.error(`NetScore out of bounds: ${this.netScore}`);
         }
         // assert(this.netScore >= 0 && this.netScore <= 1, 'NetScore out of bounds');
 

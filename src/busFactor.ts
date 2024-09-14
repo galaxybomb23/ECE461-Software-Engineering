@@ -27,7 +27,7 @@ export class BusFactor extends Metrics {
 
         if (rateLimitStatus.remaining === 0) {
             const resetTime = new Date(rateLimitStatus.reset * 1000).toLocaleTimeString();
-            console.log(`Rate limit exceeded. Try again after ${resetTime}`);
+            logger.error(`Rate limit exceeded. Try again after ${resetTime}`);
             return -1;
         }
 
@@ -72,10 +72,6 @@ export class BusFactor extends Metrics {
             }
             page++;
         }
-
-        // print total number of commits 📝
-        // console.log("Total number of commits:", Array.from(commitCounts.values()).reduce((a, b) => a + b, 0));
-        // console.log("Commit data:", commitCounts);
 
         return commitCounts;
     }

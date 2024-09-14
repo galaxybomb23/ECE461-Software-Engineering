@@ -115,17 +115,16 @@ export class License extends Metrics {
 
             startTime = performance.now();
             const licenseInfo = await this.extractLicenseInfo(cloneDir);
-            // console.log('\x1b[34mLicense info:\n', licenseInfo, '\x1b[0m'); //📝
+
             if (licenseInfo) {
                 this.license = this.checkLicenseCompatibility(licenseInfo);
             } else {
                 this.license = -1; // No license information found
             }
         } catch (error) {
-            console.error('Error evaluating license:', error);
+            logger.error('Error evaluating license:', error);
             this.license = -1; // On error, assume incompatible license
         } finally {
-            // Clean up: remove the cloned repository
             fs.rmSync(cloneDir, { recursive: true, force: true });
         }
         const endTime = performance.now();

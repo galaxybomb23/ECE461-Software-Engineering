@@ -27,7 +27,7 @@ export class Correctness extends Metrics {
 
         if (rateLimitStatus.remaining === 0) {
             const resetTime = new Date(rateLimitStatus.reset * 1000).toLocaleTimeString();
-            console.log(`Rate limit exceeded. Try again after ${resetTime}`);
+            logger.error(`Rate limit exceeded. Try again after ${resetTime}`);
             return -1;
         }
 
@@ -62,7 +62,7 @@ export class Correctness extends Metrics {
             const correctness = 1 - (openBugIssues / totalOpenIssues);
             return correctness;
         } catch (error) {
-            console.error('Error calculating correctness:', error);
+            logger.error('Error calculating correctness:', error);
             return -1;
         }
     }
@@ -113,21 +113,21 @@ export async function CorrectnessTest(): Promise<{ passed: number, failed: numbe
     const result: number = await correctness.evaluate();
     const expectedValue = 0.933333333; // Expected value is 0.93333...
     ASSERT_EQ(result, expectedValue, 'Correctness test 1') ? testsPassed++ : testsFailed++;
-    logger.debug(`Response time: ${correctness.responseTime.toFixed(6)}s\n`);
+    logger.debug(`Response time: ${correctness.responseTime.toFixed(6)}s`);
 
     // Test 2
     const correctness2 = new Correctness('https://github.com/nullivex/nodist');
     const result2: number = await correctness2.evaluate();
     const expectedValue2 = 0.90909091; // Expected value is 0.90909091
     ASSERT_EQ(result2, expectedValue2, 'Correctness test 2') ? testsPassed++ : testsFailed++;
-    logger.debug(`Response time: ${correctness2.responseTime.toFixed(6)}s\n`);
+    logger.debug(`Response time: ${correctness2.responseTime.toFixed(6)}s`);
 
     // Test 3
     const correctness3 = new Correctness('https://github.com/Coop8/Coop8');
     const result3: number = await correctness3.evaluate();
     const expectedValue3 = 1; // Expected value is 1
     ASSERT_EQ(result3, expectedValue3, 'Correctness test 3') ? testsPassed++ : testsFailed++;
-    logger.debug(`Response time: ${correctness3.responseTime.toFixed(6)}s\n`);
+    logger.debug(`Response time: ${correctness3.responseTime.toFixed(6)}s`);
 
     return { passed: testsPassed, failed: testsFailed };
 }

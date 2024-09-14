@@ -94,7 +94,7 @@ export class RampUp extends Metrics {
 
             this.rampUp = this.calculateRampUpScore();
         } catch (error) {
-            console.error('Error evaluating ramp-up:', error);
+            logger.error('Error evaluating ramp-up:', error);
             this.rampUp = -1;
         } finally {
             fs.rmSync(cloneDir, { recursive: true, force: true });
