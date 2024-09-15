@@ -5,7 +5,7 @@ import { Correctness } from './correctness.js';
 import { License } from './license.js';
 import { RampUp } from './rampUp.js';
 import { Maintainability } from './maintainability.js';
-import { assert } from 'console';
+import { assert, log } from 'console';
 import { ASSERT_EQ, ASSERT_LT, ASSERT_NEAR } from './testUtils.js';
 
 /**
@@ -63,6 +63,12 @@ export class NetScore extends Metrics {
         // Check if netscore is between 0 and 1
         if (this.netScore < 0 || this.netScore > 1) {
             logger.error(`NetScore out of bounds: ${this.netScore}`);
+
+            logger.debug(`BusFactor: ${this.busFactor.busFactor}`);
+            logger.debug(`Correctness: ${this.correctness.correctness}`);
+            logger.debug(`RampUp: ${this.rampUp.rampUp}`);
+            logger.debug(`Maintainability: ${this.maintainability.maintainability}`);
+            logger.debug(`License: ${this.license.license}`);
         }
         // assert(this.netScore >= 0 && this.netScore <= 1, 'NetScore out of bounds');
 

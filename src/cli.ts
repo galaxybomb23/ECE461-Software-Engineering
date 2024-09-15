@@ -10,6 +10,7 @@ import fs from 'fs';
 // Proprietaries
 import { Metrics, OCTOKIT, logger } from './Metrics.js';
 import { NetScore } from './netScore.js';
+// Tests
 import { BusFactorTest } from './busFactor.js';
 import { CorrectnessTest } from './correctness.js';
 import { LicenseTest } from './license.js';
@@ -114,9 +115,9 @@ async function runTests() {
         failedTests += result.failed;
     });
 
-    logger.info(`Tests Passed: ${passedTests}`);
-    logger.info(`Tests Failed: ${failedTests}`);
-    logger.info("Tests complete");
+    process.stdout.write(`Tests Passed: ${passedTests}`);
+    process.stdout.write(`Tests Failed: ${failedTests}`);
+    process.stdout.write("Tests complete");
 
     // Syntax checker stuff (may move to run file in future idk)
     let coverage: number = Math.round(passedTests / (passedTests + failedTests) * 100); // dummy variable for now
