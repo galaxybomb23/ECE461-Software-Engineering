@@ -122,9 +122,9 @@ async function runTests() {
     let coverage: number = Math.round(passedTests / (passedTests + failedTests) * 100); // dummy variable for now
     let total: number = passedTests + failedTests;
     
-    logger.info(`Total: ${total}\n`);
-    logger.info(`Passed: ${passedTests}\n`);
-    logger.info(`Coverage: ${coverage}%\n`);
+    logger.info(`Total: ${total}`);
+    logger.info(`Passed: ${passedTests}`);
+    logger.info(`Coverage: ${coverage}%`);
     logger.info(`${passedTests}/${total} test cases passed. ${coverage}% line coverage achieved.\n`);
 }
 
