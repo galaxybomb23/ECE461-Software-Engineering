@@ -1,8 +1,10 @@
 #!/bin/bash
 
 # change this to run from any directory
+original_dir=$(pwd)
 cd "$(dirname "$0")"
-echo "Running from $(pwd)"
+mkdir -p logs
+echo "Running from $(pwd)" > logs/run.log
 
 
 
@@ -45,26 +47,34 @@ install_latest_node() {
   fi
 }
 
+build() {
+  echo "Building the project..." >> logs/run.log
+  npx tsc
+  chmod +x dist/cli.js 
+}
+
 
 # Main script execution
 
 case $1 in
   build)
-    npx tsc
-    chmod +x dist/cli.js 
+    build 
     ;;
   install)
     # Run the install_latest_node function to ensure Node.js is up-to-date
     install_latest_node
     npm install
+    build
     ;;
   clean)
     rm -rf build
     rm -rf dist
     ;;
   *)
-    npx tsc
-    chmod +x dist/cli.js
-    ./dist/cli.js $@
+    build
+    ./dist/cli.js "$@" 
     ;;
 esac
+
+# change back to the original directory
+cd "$original_dir"
