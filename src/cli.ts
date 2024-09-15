@@ -17,6 +17,7 @@ import { MaintainabilityTest } from './maintainability.js';
 import { RampUpTest } from './rampUp.js';
 import { NetScoreTest } from './netScore.js';
 import { exit } from 'process';
+import { log } from 'console';
 
 dotenv.config();
 
@@ -34,14 +35,14 @@ async function getGithubUrlFromNpm(npmUrl: string): Promise<string | null> {
         const repoUrl = response.data.repository?.url;
         if (repoUrl && repoUrl.includes('github.com')) {
             // Normalize the URL (remove 'git+', 'ssh://git@', and '.git' if present)
-            console.log(`Found GitHub URL for ${npmUrl}: ${repoUrl}`);
+            logger.info(`Found GitHub URL for ${npmUrl}: ${repoUrl}`);
             let normalizedUrl = repoUrl.replace(/^git\+/, '').replace(/^ssh:\/\/git@github.com/, 'https://github.com').replace(/\.git$/, '');
             return normalizedUrl;
         } else {
             return null;
         }
     } catch (error) {
-        console.error(`Error fetching GitHub URL for ${npmUrl}:`, error);
+        logger.error(`Error fetching GitHub URL for ${npmUrl}:`, error);
         return null;
     }
 }
@@ -97,7 +98,6 @@ async function runTests() {
     apiRemaining.push((await OCTOKIT.rateLimit.get()).data.rate.remaining);
 
     // Calc used rate limit 📝
-    // Calc used rate limit 📝
     let usedRateLimit = apiRemaining[0] - apiRemaining[apiRemaining.length - 1];
     logger.debug(`Rate Limit Usage:`);
     logger.debug(`License Test: ${apiRemaining[0] - apiRemaining[1]}`);
@@ -152,17 +152,15 @@ async function processUrls(filePath: string): Promise<void> {
     }
 
     // print the github urls
-    // console.log('GitHub URLs:');
-    // console.log(githubUrls);
+    logger.debug('GitHub URLs:');
+    logger.debug(githubUrls);
 
     // Process each GitHub URL
     for (const url of githubUrls) {
         const netScore = new NetScore(url);
         const result = await netScore.evaluate();
         process.stdout.write(netScore.toString() + '\n');
-        //write to a file in logging
-        fs.appendFileSync('logs/run.log', "NetScores: \n");
-        fs.appendFileSync('logs/run.log', netScore.toString() + '\n');
+        logger.debug(`URL: ${url}, NetScore: ${result}`);
     }
     exit(0);
 }

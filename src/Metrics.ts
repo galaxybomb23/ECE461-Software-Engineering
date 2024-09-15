@@ -56,7 +56,7 @@ export abstract class Metrics {
         const match = url.match(regex);
         if (!match)
         {
-            logger.error(`${url} is an valid Github URL`); 
+            logger.error(`${url} is an invalid Github URL`); 
             throw new Error("Invalid GitHub URL");
         }
         return { owner: match[1], repo: match[2] };
