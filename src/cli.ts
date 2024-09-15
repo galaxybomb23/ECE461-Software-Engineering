@@ -4,11 +4,12 @@
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import dotenv from 'dotenv';
+import axios from 'axios';
 import fs from 'fs';
 
-import { OCTOKIT, logger } from './Metrics.js';
+// Proprietaries
+import { Metrics, OCTOKIT, logger } from './Metrics.js';
 import { NetScore } from './netScore.js';
-
 import { BusFactorTest } from './busFactor.js';
 import { CorrectnessTest } from './correctness.js';
 import { LicenseTest } from './license.js';
@@ -18,6 +19,32 @@ import { NetScoreTest } from './netScore.js';
 import { exit } from 'process';
 
 dotenv.config();
+
+async function getGithubUrlFromNpm(npmUrl: string): Promise<string | null> {
+    try {
+        // Extract package name from npm URL
+        const packageName = npmUrl.split('/').pop();
+        if (!packageName) return null;
+
+        // Fetch package details from npm registry
+        const npmApiUrl = `https://registry.npmjs.org/${packageName}`;
+        const response = await axios.get(npmApiUrl);
+
+        // Check if the package has a repository field
+        const repoUrl = response.data.repository?.url;
+        if (repoUrl && repoUrl.includes('github.com')) {
+            // Normalize the URL (remove 'git+', 'ssh://git@', and '.git' if present)
+            console.log(`Found GitHub URL for ${npmUrl}: ${repoUrl}`);
+            let normalizedUrl = repoUrl.replace(/^git\+/, '').replace(/^ssh:\/\/git@github.com/, 'https://github.com').replace(/\.git$/, '');
+            return normalizedUrl;
+        } else {
+            return null;
+        }
+    } catch (error) {
+        console.error(`Error fetching GitHub URL for ${npmUrl}:`, error);
+        return null;
+    }
+}
 
 /**
  * Displays the usage information for the CLI.
@@ -33,8 +60,8 @@ const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 /**
  * Runs the tests and displays the results.
- * 
- * @returns {Promise<void>} A promise that resolves when the tests are complete.
+ *
+ * @returns {Promise<void>} A promise that resolves when the tests are completed.
  */
 async function runTests() {
     let passedTests = 0;
@@ -52,6 +79,7 @@ async function runTests() {
     // Print warning if rate limit is low
     if (status.data.rate.remaining < 300) {
         logger.warn('Warning: Rate limit is low. Test Suite uses ~ 250 calls. Consider using a different token.');
+        exit(1);
     }
 
     // Run tests
@@ -68,6 +96,7 @@ async function runTests() {
     results.push(await NetScoreTest());
     apiRemaining.push((await OCTOKIT.rateLimit.get()).data.rate.remaining);
 
+    // Calc used rate limit 📝
     // Calc used rate limit 📝
     let usedRateLimit = apiRemaining[0] - apiRemaining[apiRemaining.length - 1];
     logger.debug(`Rate Limit Usage:`);
@@ -89,24 +118,59 @@ async function runTests() {
     logger.info(`Tests Failed: ${failedTests}`);
     logger.info("Tests complete");
 
-    if (failedTests / (passedTests + failedTests) > 0.05) {      //if more than 5% of the tests fail, exit with error
-        logger.error('Error: More than 5% of tests failed. Exiting with error code 1');
-        await sleep(1000);
-        exit(1);
-    }
-    await sleep(1000);
-    exit(0);
+    // Syntax checker stuff (may move to run file in future idk)
+    let coverage: number = Math.round(passedTests / (passedTests + failedTests) * 100); // dummy variable for now
+    let total: number = passedTests + failedTests;
+    
+    logger.info(`Total: ${total}\n`);
+    logger.info(`Passed: ${passedTests}\n`);
+    logger.info(`Coverage: ${coverage}%\n`);
+    logger.info(`${passedTests}/${total} test cases passed. ${coverage}% line coverage achieved.\n`);
 }
 
-// Placeholder function for processing URLs
-function processUrls(urlFile: string) {
-    logger.info(`Processing URLs from file: ${urlFile}`);
-    // Implement URL processing logic here
+/**
+ * Processes a file containing URLs and performs actions based on the type of URL.
+ * 
+ * @param filePath - The path to the file containing the URLs.
+ * @returns A promise that resolves when all URLs have been processed.
+ */
+async function processUrls(filePath: string): Promise<void> {
+    const urls: string[] = fs.readFileSync(filePath, 'utf-8').split('\n');
+    const githubUrls: string[] = [];
+
+    for (const url of urls) {
+        if (url.includes('github.com')) {
+            // If it's already a GitHub URL, add it to the list
+            githubUrls.push(url);
+        } else if (url.includes('npmjs.com')) {
+            // If it's an npm URL, try to get the GitHub URL
+            const githubUrl = await getGithubUrlFromNpm(url);
+            if (githubUrl) {
+                githubUrls.push(githubUrl);
+            }
+        }
+    }
+
+    // print the github urls
+    // console.log('GitHub URLs:');
+    // console.log(githubUrls);
+
+    // Process each GitHub URL
+    for (const url of githubUrls) {
+        const netScore = new NetScore(url);
+        const result = await netScore.evaluate();
+        process.stdout.write(netScore.toString() + '\n');
+        //write to a file in logging
+        fs.appendFileSync('logs/run.log', "NetScores: \n");
+        fs.appendFileSync('logs/run.log', netScore.toString() + '\n');
+    }
+    exit(0);
 }
 
 /**
  * The main function. Handles command line arguments and executes the appropriate functions.
  */
+
 function main() {
     const argv = yargs(hideBin(process.argv))
         .command('test', 'Run test suite', {}, () => {

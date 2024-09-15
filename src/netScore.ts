@@ -5,7 +5,8 @@ import { Correctness } from './correctness.js';
 import { License } from './license.js';
 import { RampUp } from './rampUp.js';
 import { Maintainability } from './maintainability.js';
-import { ASSERT_LT, ASSERT_NEAR } from './testUtils.js';
+import { assert } from 'console';
+import { ASSERT_EQ, ASSERT_LT, ASSERT_NEAR } from './testUtils.js';
 
 /**
  * Represents a NetScore object that calculates the net score of a software project based on various metrics.
@@ -35,7 +36,7 @@ export class NetScore extends Metrics {
      * @returns A promise that resolves to the calculated net score.
      */
     async evaluate(): Promise<number> {
-        // generate the metrics
+        // Generate the metrics
         const startTime = performance.now();
         await Promise.all([
             this.busFactor.evaluate(),
@@ -46,8 +47,8 @@ export class NetScore extends Metrics {
         ]);
         const endTime = performance.now();
 
-        // calculate the net score
-        // if any metric is -1 then netscore is 0
+        // Calculate the net score
+        // If any metric is -1 then netscore is 0
         if (this.busFactor.busFactor == -1 || this.correctness.correctness == -1 || this.license.license == -1 || this.rampUp.rampUp == -1 || this.maintainability.maintainability == -1) {
             this.netScore = 0;
             return this.netScore;
@@ -59,13 +60,13 @@ export class NetScore extends Metrics {
             }
         }
 
-        // check if netscore is between 0 and 1
+        // Check if netscore is between 0 and 1
         if (this.netScore < 0 || this.netScore > 1) {
             logger.error(`NetScore out of bounds: ${this.netScore}`);
         }
         // assert(this.netScore >= 0 && this.netScore <= 1, 'NetScore out of bounds');
 
-        // calculate the response time
+        // Calculate the response time
         const elapsedTime = Number(endTime - startTime) / 1e6; // Convert to milliseconds
         this.responseTime = elapsedTime
 
@@ -84,13 +85,26 @@ export class NetScore extends Metrics {
      * "License_Latency": <licenseResponseTime>}`
      */
     toString(): string {
-        return `{"URL":"${this.url}", "NetScore": ${this.netScore}, "NetScore_Latency": ${this.responseTime}, 
-        "RampUp": ${this.rampUp.rampUp}, "RampUp_Latency": ${this.rampUp.responseTime}, 
-        "Correctness": ${this.correctness.correctness}, "Correctness_Latency": ${this.correctness.responseTime}, 
-        "BusFactor": ${this.busFactor.busFactor}, "BusFactor_Latency": ${this.busFactor.responseTime}, 
-        "ResponsiveMaintainer": ${this.maintainability.maintainability}, 
-        "ResponsiveMaintainer_Latency": ${this.maintainability.responseTime}, "License": ${this.license.license}, 
-        "License_Latency": ${this.license.responseTime}}`;
+        return `{
+            "URL": "${this.url}",
+            "NetScore": ${this.netScore.toFixed(3)},
+            "NetScore_Latency": ${this.responseTime.toFixed(3)},
+            "RampUp": ${this.rampUp.rampUp.toFixed(3)},
+            "RampUp_Latency": ${this.rampUp.responseTime.toFixed(3)},
+            "Correctness": ${this.correctness.correctness.toFixed(3)},
+            "Correctness_Latency": ${this.correctness.responseTime.toFixed(3)},
+            "BusFactor": ${this.busFactor.busFactor.toFixed(3)},
+            "BusFactor_Latency": ${this.busFactor.responseTime.toFixed(3)},
+            "ResponsiveMaintainer": ${this.maintainability.maintainability.toFixed(3)},
+            "ResponsiveMaintainer_Latency": ${this.maintainability.responseTime.toFixed(3)},
+            "License": ${this.license.license.toFixed(3)},
+            "License_Latency": ${this.license.responseTime.toFixed(3)}
+        }`.replace(/\s+/g, ' ')
+        .replace(/\s*{\s*/g, '{')
+        .replace(/\s*}\s*/g, '}')
+        .replace(/"\s*:\s*/g, '":')
+        .replace(/\s*"\s*/g, '"')
+        .replace(/,(?!\s)/g, ', ');
     }
 }
 

@@ -3,8 +3,8 @@ import { createLogger, format, Logger, transports } from 'winston';
 import dotenv from 'dotenv';
 
 dotenv.config();
-
-const githubToken = process.env.API_TOKEN;
+// Access the token value
+const githubToken = process.env.GITHUB_TOKEN;
 if (!githubToken) {
     throw new Error('API_TOKEN is not defined in the .env file');
 }
