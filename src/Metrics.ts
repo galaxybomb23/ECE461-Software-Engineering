@@ -26,14 +26,14 @@ export let OCTOKIT: Octokit = new Octokit({ auth: githubToken, });
 export let logger: Logger = createLogger({
     level: logLevel,
     format: format.combine(
-      format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-      format.printf(({ timestamp, level, message }) => `${timestamp} [${level.toUpperCase()}]: ${message}`)
+        format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+        format.printf(({ timestamp, level, message }) => `${timestamp} [${level.toUpperCase()}]: ${message}`)
     ),
     transports: [
-    // Log to console
-    new transports.File({ filename: logFile, options: { flags: 'a' } }) // Log to a file and append
+        // Log to console
+        new transports.File({ filename: logFile, options: { flags: 'a' } }) // Log to a file and append
     ],
-  });
+});
 
 /**
  * Represents a Metrics class.
@@ -55,12 +55,11 @@ export abstract class Metrics {
     }
 
     private getRepoData(url: string): { owner: string; repo: string } {
-        const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)/;
+        const regex = /github\.com\/([^/]+)\/([^/]+)/;
         const match = url.match(regex);
-        if (!match)
-        {
-            logger.error(`${url} is an invalid Github URL`); 
-            throw new Error("Invalid GitHub URL");
+        if (!match) {
+            logger.error(`${url} is an invalid Github URL`);
+            throw new Error(`Invalid GitHub URL ${url}`);
         }
         return { owner: match[1], repo: match[2] };
     }

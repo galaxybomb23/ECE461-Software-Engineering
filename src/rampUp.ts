@@ -85,7 +85,9 @@ export class RampUp extends Metrics {
      * @returns A promise that resolves to the ramp-up score.
      */
     public async evaluate(): Promise<number> {
+
         const cloneDir = path.join('/tmp', 'repo-clone-rampUp');
+        logger.debug(`Evaluating RampUp for ${this.url}`);
         let startTime = performance.now();
 
         try {
@@ -102,6 +104,7 @@ export class RampUp extends Metrics {
 
         const endTime = performance.now();
         this.responseTime = Number(endTime - startTime) / 1e6; // Convert to milliseconds
+        logger.debug(`RampUp: ${this.rampUp}`);
         return this.rampUp;
     }
 }

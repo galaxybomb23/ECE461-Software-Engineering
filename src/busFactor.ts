@@ -30,7 +30,7 @@ export class BusFactor extends Metrics {
             logger.error(`Rate limit exceeded. Try again after ${resetTime}`);
             return -1;
         }
-
+        logger.debug(`Evaluating BusFactor for ${this.url}`);
         const startTime = performance.now();
         const commitData = await this.getCommitData(this.owner, this.repo);
         this.busFactor = this.calculateBusFactor(commitData);
@@ -38,6 +38,7 @@ export class BusFactor extends Metrics {
         const elapsedTime = Number(endTime - startTime) / 1e6; // Convert to milliseconds
         this.responseTime = elapsedTime;
 
+        logger.debug(`Bus Factor: ${this.busFactor}`);
         return this.busFactor;
     }
 
@@ -75,7 +76,7 @@ export class BusFactor extends Metrics {
 
         //print total number of commits
         logger.debug(`Total number of commits: ${Array.from(commitCounts.values()).reduce((a, b) => a + b, 0)}`);
-        logger.debug("Commit Data:", commitCounts);
+        logger.debug(`Commit Data: ${JSON.stringify(Array.from(commitCounts.entries()))}`);
 
         return commitCounts;
     }
@@ -92,7 +93,7 @@ export class BusFactor extends Metrics {
 
         let commitSum = 0;
         let i = 0;
-        while (commitSum < totalCommits * 0.5) {
+        while (commitSum < totalCommits * 0.85) {
             commitSum += sortedContributors[i][1];
             i++;
         }
@@ -100,7 +101,7 @@ export class BusFactor extends Metrics {
         const rawBusFactor = i / sortedContributors.length;
         const adjustedBusFactor = rawBusFactor * 2;
 
-        return Math.min(adjustedBusFactor);
+        return Math.min(adjustedBusFactor, 1);
     }
 }
 

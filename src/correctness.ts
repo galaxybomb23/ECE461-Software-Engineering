@@ -30,12 +30,14 @@ export class Correctness extends Metrics {
             logger.error(`Rate limit exceeded. Try again after ${resetTime}`);
             return -1;
         }
-
+        logger.debug(`Evaluating Correctness for ${this.url}`);
         // Calculate response time of evaluate method
         const startTime = performance.now();
         this.correctness = await this.calculateCorrectness();
         const endTime = performance.now();
         this.responseTime = Number(endTime - startTime) / 1e6;
+
+        logger.debug(`Correctness: ${this.correctness}`);
 
         return this.correctness;
     }
@@ -78,7 +80,7 @@ export class Correctness extends Metrics {
         try {
             const owner = this.owner;
             const repo = this.repo;
-        
+
             const { data } = await this.octokit.issues.listForRepo({
                 owner,
                 repo,

@@ -36,6 +36,7 @@ export class NetScore extends Metrics {
      */
     async evaluate(): Promise<number> {
         // Generate the metrics
+        logger.debug(`Evaluating NetScore for ${this.url}`);
         const startTime = performance.now();
         await Promise.all([
             this.busFactor.evaluate(),
@@ -105,11 +106,11 @@ export class NetScore extends Metrics {
             "License": ${this.license.license.toFixed(3)},
             "License_Latency": ${this.license.responseTime.toFixed(3)}
         }`.replace(/\s+/g, ' ')
-        .replace(/\s*{\s*/g, '{')
-        .replace(/\s*}\s*/g, '}')
-        .replace(/"\s*:\s*/g, '":')
-        .replace(/\s*"\s*/g, '"')
-        .replace(/,(?!\s)/g, ', ');
+            .replace(/\s*{\s*/g, '{')
+            .replace(/\s*}\s*/g, '}')
+            .replace(/"\s*:\s*/g, '":')
+            .replace(/\s*"\s*/g, '"')
+            .replace(/,(?!\s)/g, ', ');
     }
 
 }
