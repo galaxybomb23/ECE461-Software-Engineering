@@ -6,7 +6,7 @@ dotenv.config();
 // Access the token value
 const githubToken = process.env.GITHUB_TOKEN;
 if (!githubToken) {
-    throw new Error('API_TOKEN is not defined in the .env file');
+    throw new Error('GITHUB_TOKEN is not defined in the .env file');
 }
 let logLevel = process.env.LOG_LEVEL;
 if (!logLevel) {

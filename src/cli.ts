@@ -115,18 +115,14 @@ async function runTests() {
         failedTests += result.failed;
     });
 
-    process.stdout.write(`Tests Passed: ${passedTests}\n`);
-    process.stdout.write(`Tests Failed: ${failedTests}\n`);
-    process.stdout.write("Tests complete\n");
-
     // Syntax checker stuff (may move to run file in future idk)
     let coverage: number = Math.round(passedTests / (passedTests + failedTests) * 100); // dummy variable for now
     let total: number = passedTests + failedTests;
     
-    logger.info(`Total: ${total}`);
-    logger.info(`Passed: ${passedTests}`);
-    logger.info(`Coverage: ${coverage}%`);
-    logger.info(`${passedTests}/${total} test cases passed. ${coverage}% line coverage achieved.\n`);
+    process.stdout.write(`Total: ${total}\n`);
+    process.stdout.write(`Passed: ${passedTests}\n`);
+    process.stdout.write(`Coverage: ${coverage}%\n`);
+    process.stdout.write(`${passedTests}/${total} test cases passed. ${coverage}% line coverage achieved.\n`);
 }
 
 /**
