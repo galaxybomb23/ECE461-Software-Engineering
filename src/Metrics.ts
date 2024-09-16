@@ -46,9 +46,11 @@ export abstract class Metrics {
     protected url: string;
     protected owner: string;
     protected repo: string;
+    public NativeURL: string;
 
-    constructor(url: string) {
+    constructor(NativeURL: string, url: string) {
         this.url = url;
+        this.NativeURL = NativeURL;
         const { owner, repo } = this.getRepoData(this.url);
         this.owner = owner;
         this.repo = repo;

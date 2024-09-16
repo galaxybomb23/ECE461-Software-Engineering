@@ -22,8 +22,8 @@ export class RampUp extends Metrics {
         makefile: { name: 'makefile', found: false, fileType: 'file' },
     };
 
-    constructor(url: string) {
-        super(url);
+    constructor(nativeUrl: string, url: string) {
+        super(nativeUrl, url);
     }
 
     /**
@@ -127,7 +127,7 @@ export async function RampUpTest(): Promise<{ passed: number, failed: number }> 
 
     // Iterate over the ground truth data and run tests
     for (const test of groundTruth) {
-        let rampUp = new RampUp(test.url);
+        let rampUp = new RampUp(test.url, test.url);
         let result = await rampUp.evaluate();
         ASSERT_EQ(result, test.expectedRampUp, `RampUp Test for ${test.url}`) ? testsPassed++ : testsFailed++;
         ASSERT_LT(rampUp.responseTime, 0.004, `RampUp Response Time Test for ${test.url}`) ? testsPassed++ : testsFailed++;

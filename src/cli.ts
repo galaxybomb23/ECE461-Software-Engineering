@@ -134,9 +134,10 @@ async function processUrls(filePath: string): Promise<void> {
     logger.debug(`Rate limit status: ${status.data.rate.remaining} remaining out of ${status.data.rate.limit}`);
 
     const urls: string[] = fs.readFileSync(filePath, 'utf-8').split('\n');
-    const githubUrls: string[] = [];
+    const githubUrls: [string, string][] = [];
 
     for (const url of urls) {
+
         //remove whitespace
         url.trim();
         // Skip empty lines
@@ -144,12 +145,12 @@ async function processUrls(filePath: string): Promise<void> {
 
         if (url.includes('github.com')) {
             // If it's already a GitHub URL, add it to the list
-            githubUrls.push(url);
+            githubUrls.push([url, url]);
         } else if (url.includes('npmjs.com')) {
             // If it's an npm URL, try to get the GitHub URL
             const githubUrl = await getGithubUrlFromNpm(url);
             if (githubUrl) {
-                githubUrls.push(githubUrl);
+                githubUrls.push([url,githubUrl]);
             }
         }
     }
@@ -157,12 +158,12 @@ async function processUrls(filePath: string): Promise<void> {
     // print the github urls
     logger.debug('GitHub URLs:');
     for (const url of githubUrls) {
-        logger.debug(`\t${url}`);
+        logger.debug(`\t${url[0]} -> ${url[1]}`);
     }
 
     // Process each GitHub URL
     for (const url of githubUrls) {
-        const netScore = new NetScore(url);
+        const netScore = new NetScore(url[0], url[1]);
         const result = await netScore.evaluate();
         process.stdout.write(netScore.toString() + '\n');
         logger.debug(`URL: ${url}, NetScore: ${result}\n`);

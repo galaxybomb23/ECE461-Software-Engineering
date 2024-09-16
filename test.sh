@@ -4,10 +4,11 @@
 file_50="test/test_data50.txt"
 file_75="test/test_data75.txt"
 file_85="test/test_data85.txt"
+new_file="test/test_data.txt"
 
 # ./run test/URLS.txt > $temp_file
 
-for test_file in "$file_50" "$file_75" "$file_85"; do
+for test_file in "$file_50" "$file_75" "$file_85" "$new_file"; do
   # Read each JSON object from the temporary file
   net_score_sum=0
   net_score_latency_sum=0
@@ -23,6 +24,8 @@ for test_file in "$file_50" "$file_75" "$file_85"; do
   license_latency_sum=0
   count=0
   while IFS= read -r json; do
+    #get URL
+    url=$(echo "$json" | grep -o '"URL":"[^"]*' | awk -F'":"' '{print $2}')
     # Extract scores using grep and awk
     ramp_up=$(echo "$json" | grep -o '"RampUp":[^,]*' | awk -F: '{print $2}' | tr -d '"')
     correctness=$(echo "$json" | grep -o '"Correctness":[^,]*' | awk -F: '{print $2}' | tr -d '"')
@@ -54,15 +57,15 @@ for test_file in "$file_50" "$file_75" "$file_85"; do
     license_latency_sum=$(echo "$license_latency_sum + $license_latency" | bc)
     count=$((count + 1))
 
-    # # Print the scores as a table
-    # echo -e "Scores for Repository $count"
-    # printf "%-25s : %10.2f\n" "RampUp" "$ramp_up"
-    # printf "%-25s : %10.2f\n" "Correctness" "$correctness"
-    # printf "%-25s : %10.2f\n" "BusFactor" "$bus_factor"
-    # printf "%-25s : %10.2f\n" "ResponsiveMaintainer" "$responsive_maintainer"
-    # printf "%-25s : %10.2f\n" "License" "$license"
-    # printf "%-25s : %10.2f\n" "NetScore" "$net_score"
-    # echo ""
+    # Print the scores as a table
+    echo -e "Scores for Repository $url"
+    printf "%-25s : %10.2f\n" "BusFactor" "$bus_factor"
+    printf "%-25s : %10.2f\n" "RampUp" "$ramp_up"
+    printf "%-25s : %10.2f\n" "License" "$license"
+    printf "%-25s : %10.2f\n" "ResponsiveMaintainer" "$responsive_maintainer"
+    printf "%-25s : %10.2f\n" "Correctness" "$correctness"
+    printf "%-25s : %10.2f\n" "NetScore" "$net_score"
+    echo ""
   done < "$test_file"
 
   # Calculate the average scores

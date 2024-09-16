@@ -20,13 +20,13 @@ export class NetScore extends Metrics {
     rampUp: RampUp;
     maintainability: Maintainability;
 
-    constructor(url: string) {
-        super(url);
-        this.busFactor = new BusFactor(url);
-        this.correctness = new Correctness(url);
-        this.license = new License(url);
-        this.rampUp = new RampUp(url);
-        this.maintainability = new Maintainability(url);
+    constructor(nativeUrl: string, url: string) {
+        super(nativeUrl, url);
+        this.busFactor = new BusFactor(nativeUrl, url);
+        this.correctness = new Correctness(nativeUrl, url);
+        this.license = new License(nativeUrl, url);
+        this.rampUp = new RampUp(nativeUrl, url);
+        this.maintainability = new Maintainability(nativeUrl, url);
     }
 
     /**
@@ -92,7 +92,7 @@ export class NetScore extends Metrics {
      */
     toString(): string {
         return `{
-            "URL": "${this.url}",
+            "URL": "${this.NativeURL}",
             "NetScore": ${this.netScore.toFixed(3)},
             "NetScore_Latency": ${this.responseTime.toFixed(3)},
             "RampUp": ${this.rampUp.rampUp.toFixed(3)},
@@ -129,7 +129,7 @@ export async function NetScoreTest(): Promise<{ passed: number, failed: number }
     let netScores: NetScore[] = [];
 
     // First test
-    let netScore = new NetScore('https://github.com/cloudinary/cloudinary_npm');
+    let netScore = new NetScore('https://github.com/cloudinary/cloudinary_npm', 'https://github.com/cloudinary/cloudinary_npm');
     let result = await netScore.evaluate();
     ASSERT_NEAR(result, 0.65, .05, "Net Score Test 1") ? testsPassed++ : testsFailed++;
     ASSERT_LT(netScore.responseTime, 0.02, "Net Score Response Time Test 1") ? testsPassed++ : testsFailed++;
@@ -137,7 +137,7 @@ export async function NetScoreTest(): Promise<{ passed: number, failed: number }
     netScores.push(netScore);
 
     // Second test
-    netScore = new NetScore('https://github.com/nullivex/nodist');
+    netScore = new NetScore('https://github.com/nullivex/nodist', 'https://github.com/nullivex/nodist');
     result = await netScore.evaluate();
     ASSERT_NEAR(result, 0.20, .05, "Net Score Test 2") ? testsPassed++ : testsFailed++;
     ASSERT_LT(netScore.responseTime, 0.02, "Net Score Response Time Test 2") ? testsPassed++ : testsFailed++;
@@ -145,7 +145,7 @@ export async function NetScoreTest(): Promise<{ passed: number, failed: number }
     netScores.push(netScore);
 
     // Third test
-    netScore = new NetScore('https://github.com/lodash/lodash');
+    netScore = new NetScore('https://github.com/lodash/lodash', 'https://github.com/lodash/lodash');
     result = await netScore.evaluate();
     ASSERT_NEAR(result, 0.30, .05, "Net Score Test 3") ? testsPassed++ : testsFailed++;
     ASSERT_LT(netScore.responseTime, 0.02, "Net Score Response Time Test 3") ? testsPassed++ : testsFailed++;

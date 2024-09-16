@@ -13,8 +13,8 @@ export class Correctness extends Metrics {
      * Constructs a new instance of the class.
      * @param url The URL to be passed to the constructor.
      */
-    constructor(url: string) {
-        super(url);
+    constructor(nativeUrl: string, url: string) {
+        super(nativeUrl, url);
     }
 
     /**
@@ -111,21 +111,21 @@ export async function CorrectnessTest(): Promise<{ passed: number, failed: numbe
     let testsFailed = 0;
 
     // Test 1
-    const correctness = new Correctness('https://github.com/cloudinary/cloudinary_npm');
+    const correctness = new Correctness('https://github.com/cloudinary/cloudinary_npm', 'https://github.com/cloudinary/cloudinary_npm');
     const result: number = await correctness.evaluate();
     const expectedValue = 0.933333333; // Expected value is 0.93333...
     ASSERT_EQ(result, expectedValue, 'Correctness test 1') ? testsPassed++ : testsFailed++;
     logger.debug(`Response time: ${correctness.responseTime.toFixed(6)}s`);
 
     // Test 2
-    const correctness2 = new Correctness('https://github.com/nullivex/nodist');
+    const correctness2 = new Correctness('https://github.com/nullivex/nodist', 'https://github.com/nullivex/nodist');
     const result2: number = await correctness2.evaluate();
     const expectedValue2 = 0.90909091; // Expected value is 0.90909091
     ASSERT_EQ(result2, expectedValue2, 'Correctness test 2') ? testsPassed++ : testsFailed++;
     logger.debug(`Response time: ${correctness2.responseTime.toFixed(6)}s`);
 
     // Test 3
-    const correctness3 = new Correctness('https://github.com/Coop8/Coop8');
+    const correctness3 = new Correctness('https://github.com/Coop8/Coop8', 'https://github.com/Coop8/Coop8');
     const result3: number = await correctness3.evaluate();
     const expectedValue3 = 1; // Expected value is 1
     ASSERT_EQ(result3, expectedValue3, 'Correctness test 3') ? testsPassed++ : testsFailed++;

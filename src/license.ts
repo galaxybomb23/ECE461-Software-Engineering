@@ -12,8 +12,8 @@ import { ASSERT_EQ } from './testUtils.js';
  */
 export class License extends Metrics {
     public license: number = -1;
-    constructor(url: string) {
-        super(url);
+    constructor(nativeUrl: string, url: string) {
+        super(nativeUrl, url);
     }
 
     /**
@@ -148,21 +148,21 @@ export async function LicenseTest(): Promise<{ passed: number, failed: number }>
     let licenses: License[] = [];
 
     // First test
-    let license = new License('https://github.com/cloudinary/cloudinary_npm');
+    let license = new License('https://github.com/cloudinary/cloudinary_npm', 'https://github.com/cloudinary/cloudinary_npm');
     let result = await license.evaluate();
     ASSERT_EQ(result, 1, "License Test 1") ? testsPassed++ : testsFailed++;
     logger.debug(`Response time: ${license.responseTime.toFixed(6)}s`);
     licenses.push(license);
 
     // Second test
-    license = new License('https://github.com/nullivex/nodist');
+    license = new License('https://github.com/nullivex/nodist', 'https://github.com/nullivex/nodist');
     result = await license.evaluate();
     ASSERT_EQ(result, 1, "License Test 2") ? testsPassed++ : testsFailed++;
     logger.debug(`Response time: ${license.responseTime.toFixed(6)}s`);
     licenses.push(license);
 
     // Third test
-    license = new License('https://github.com/lodash/lodash');
+    license = new License('https://github.com/lodash/lodash', 'https://github.com/lodash/lodash');
     result = await license.evaluate();
     ASSERT_EQ(result, 1, "License Test 3") ? testsPassed++ : testsFailed++;
     logger.debug(`Response time: ${license.responseTime.toFixed(6)}s`);
