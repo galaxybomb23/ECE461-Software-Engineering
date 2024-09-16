@@ -1,5 +1,5 @@
 import { performance } from "perf_hooks";
-import { Metrics } from "./Metrics.js";
+import { Metrics, logger } from "./Metrics.js";
 import { ASSERT_EQ, ASSERT_LT } from "./testUtils.js";
 
 /**
@@ -27,7 +27,7 @@ export class BusFactor extends Metrics {
 
         if (rateLimitStatus.remaining === 0) {
             const resetTime = new Date(rateLimitStatus.reset * 1000).toLocaleTimeString();
-            console.log(`Rate limit exceeded. Try again after ${resetTime}`);
+            logger.error(`Rate limit exceeded. Try again after ${resetTime}`);
             return -1;
         }
 
@@ -73,9 +73,9 @@ export class BusFactor extends Metrics {
             page++;
         }
 
-        // print total number of commits 📝
-        // console.log("Total number of commits:", Array.from(commitCounts.values()).reduce((a, b) => a + b, 0));
-        // console.log("Commit data:", commitCounts);
+        //print total number of commits
+        logger.debug(`Total number of commits: ${Array.from(commitCounts.values()).reduce((a, b) => a + b, 0)}`);
+        logger.debug("Commit Data:", commitCounts);
 
         return commitCounts;
     }
@@ -118,7 +118,7 @@ export async function BusFactorTest(): Promise<{ passed: number, failed: number 
     let result = await busFactor.evaluate();
     ASSERT_EQ(result, 0.15, "Bus Factor Test 1") ? testsPassed++ : testsFailed++;
     ASSERT_LT(busFactor.responseTime, 0.004, "Bus Factor Response Time Test 1") ? testsPassed++ : testsFailed++;
-    console.log(`Response time: ${busFactor.responseTime.toFixed(6)}s\n`);
+    logger.debug(`Response time: ${busFactor.responseTime.toFixed(6)}s`);
     busFactors.push(busFactor);
 
 
@@ -127,7 +127,7 @@ export async function BusFactorTest(): Promise<{ passed: number, failed: number 
     result = await busFactor.evaluate();
     ASSERT_EQ(result, 0.07, "Bus Factor Test 2") ? testsPassed++ : testsFailed++;
     ASSERT_LT(busFactor.responseTime, 0.002, "Bus Factor Response Time Test 2") ? testsPassed++ : testsFailed++;
-    console.log(`Response time: ${busFactor.responseTime.toFixed(6)}s\n`);
+    logger.debug(`Response time: ${busFactor.responseTime.toFixed(6)}s`);
     busFactors.push(busFactor);
 
     // Third test
@@ -135,7 +135,7 @@ export async function BusFactorTest(): Promise<{ passed: number, failed: number 
     result = await busFactor.evaluate();
     ASSERT_EQ(result, 0.02, "Bus Factor Test 3") ? testsPassed++ : testsFailed++;
     ASSERT_LT(busFactor.responseTime, 0.084, "Bus Factor Response Time Test 3") ? testsPassed++ : testsFailed++;
-    console.log(`Response time: ${busFactor.responseTime.toFixed(6)}s\n`);
+    logger.debug(`Response time: ${busFactor.responseTime.toFixed(6)}s`);
     busFactors.push(busFactor);
 
     return { passed: testsPassed, failed: testsFailed };

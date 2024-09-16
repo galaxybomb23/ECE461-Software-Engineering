@@ -8,7 +8,7 @@ import axios from 'axios';
 import fs from 'fs';
 
 // Proprietaries
-import { Metrics, OCTOKIT } from './Metrics.js';
+import { OCTOKIT, logger } from './Metrics.js';
 import { NetScore } from './netScore.js';
 // Tests
 import { BusFactorTest } from './busFactor.js';
@@ -35,14 +35,14 @@ async function getGithubUrlFromNpm(npmUrl: string): Promise<string | null> {
         const repoUrl = response.data.repository?.url;
         if (repoUrl && repoUrl.includes('github.com')) {
             // Normalize the URL (remove 'git+', 'ssh://git@', and '.git' if present)
-            console.log(`Found GitHub URL for ${npmUrl}: ${repoUrl}`);
+            logger.info(`Found GitHub URL for ${npmUrl}: ${repoUrl}`);
             let normalizedUrl = repoUrl.replace(/^git\+/, '').replace(/^ssh:\/\/git@github.com/, 'https://github.com').replace(/\.git$/, '');
             return normalizedUrl;
         } else {
             return null;
         }
     } catch (error) {
-        console.error(`Error fetching GitHub URL for ${npmUrl}:`, error);
+        logger.error(`Error fetching GitHub URL for ${npmUrl}:`, error);
         return null;
     }
 }
@@ -67,17 +67,17 @@ async function runTests() {
     let failedTests = 0;
     let results: { passed: number, failed: number }[] = [];
     let apiRemaining: number[] = [];
-    console.log('Running tests...');
-    console.log('Checking environment variables...');
+    logger.info('Running tests...');
+    logger.info('Checking environment variables...');
 
     // Get token from environment variable
     let status = await OCTOKIT.rateLimit.get();
-    console.log(`Rate limit status: ${status.data.rate.remaining} remaining out of ${status.data.rate.limit}`);
+    logger.debug(`Rate limit status: ${status.data.rate.remaining} remaining out of ${status.data.rate.limit}`);
     apiRemaining.push(status.data.rate.remaining);
 
     // Print warning if rate limit is low
     if (status.data.rate.remaining < 300) {
-        console.log('\x1b[1;33mWarning: Rate limit is low. Test Suite uses ~ 250 calls. Consider using a different token.\x1b[0m');
+        logger.warn('Warning: Rate limit is low. Test Suite uses ~ 250 calls. Consider using a different token.');
         exit(1);
     }
 
@@ -96,26 +96,21 @@ async function runTests() {
     apiRemaining.push((await OCTOKIT.rateLimit.get()).data.rate.remaining);
 
     // Calc used rate limit 📝
-    // Calc used rate limit 📝
     let usedRateLimit = apiRemaining[0] - apiRemaining[apiRemaining.length - 1];
-    console.log(`Rate Limit Usage:`);
-    console.log(`License Test: ${apiRemaining[0] - apiRemaining[1]}`);
-    console.log(`Bus Factor Test: ${apiRemaining[1] - apiRemaining[2]}`);
-    console.log(`Correctness Test: ${apiRemaining[2] - apiRemaining[3]}`);
-    console.log(`Ramp Up Test: ${apiRemaining[3] - apiRemaining[4]}`);
-    console.log(`Maintainability Test: ${apiRemaining[4] - apiRemaining[5]}`);
-    console.log(`Net Score Test: ${apiRemaining[5] - apiRemaining[6]}`);
-    console.log(`Total Rate Limit Used: ${usedRateLimit}`);
+    logger.debug(`Rate Limit Usage:`);
+    logger.debug(`License Test: ${apiRemaining[0] - apiRemaining[1]}`);
+    logger.debug(`Bus Factor Test: ${apiRemaining[1] - apiRemaining[2]}`);
+    logger.debug(`Correctness Test: ${apiRemaining[2] - apiRemaining[3]}`);
+    logger.debug(`Ramp Up Test: ${apiRemaining[3] - apiRemaining[4]}`);
+    logger.debug(`Maintainability Test: ${apiRemaining[4] - apiRemaining[5]}`);
+    logger.debug(`Net Score Test: ${apiRemaining[5] - apiRemaining[6]}`);
+    logger.debug(`Total Rate Limit Used: ${usedRateLimit}`);
 
     // Display test results
     results.forEach((result, index) => {
         passedTests += result.passed;
         failedTests += result.failed;
     });
-
-    console.log(`\x1b[1;32mTests Passed: ${passedTests}\x1b[0m`);
-    console.log(`\x1b[1;31mTests Failed: ${failedTests}\x1b[0m`);
-    console.log('\x1b[1;34mTests complete\x1b[0m');
 
     // Syntax checker stuff (may move to run file in future idk)
     let coverage: number = Math.round(passedTests / (passedTests + failedTests) * 100); // dummy variable for now
@@ -151,20 +146,17 @@ async function processUrls(filePath: string): Promise<void> {
     }
 
     // print the github urls
-    // console.log('GitHub URLs:');
-    // console.log(githubUrls);
+    logger.debug('GitHub URLs:');
+    logger.debug(githubUrls);
 
     // Process each GitHub URL
     for (const url of githubUrls) {
         const netScore = new NetScore(url);
         const result = await netScore.evaluate();
         process.stdout.write(netScore.toString() + '\n');
-        //write to a file in logging
-        fs.appendFileSync('logs/run.log', "NetScores: \n");
-        fs.appendFileSync('logs/run.log', netScore.toString() + '\n');
+        logger.debug(`URL: ${url}, NetScore: ${result}`);
     }
-
-
+    exit(0);
 }
 
 /**

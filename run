@@ -73,8 +73,11 @@ case $1 in
   *)
     build
     ./dist/cli.js "$@" 
+    exitCode=$?
     ;;
 esac
 
 # change back to the original directory
 cd "$original_dir"
+
+exit $exitCode
