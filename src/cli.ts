@@ -58,8 +58,6 @@ function showUsage() {
     ./run test                      # Run test suite`);
 }
 
-const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-
 /**
  * Runs the tests and displays the results.
  *

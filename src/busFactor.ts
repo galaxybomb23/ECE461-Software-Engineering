@@ -73,6 +73,10 @@ export class BusFactor extends Metrics {
             page++;
         }
 
+        //print total number of commits
+        logger.debug(`Total number of commits: ${Array.from(commitCounts.values()).reduce((a, b) => a + b, 0)}`);
+        logger.debug("Commit Data:", commitCounts);
+
         return commitCounts;
     }
 
