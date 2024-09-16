@@ -8,7 +8,7 @@ import axios from 'axios';
 import fs from 'fs';
 
 // Proprietaries
-import { Metrics, OCTOKIT, logger } from './Metrics.js';
+import { OCTOKIT, logger } from './Metrics.js';
 import { NetScore } from './netScore.js';
 // Tests
 import { BusFactorTest } from './busFactor.js';
@@ -18,7 +18,6 @@ import { MaintainabilityTest } from './maintainability.js';
 import { RampUpTest } from './rampUp.js';
 import { NetScoreTest } from './netScore.js';
 import { exit } from 'process';
-import { log } from 'console';
 
 dotenv.config();
 

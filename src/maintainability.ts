@@ -1,5 +1,5 @@
 import { Metrics, logger } from "./Metrics.js";
-import { ASSERT_EQ, ASSERT_LT, ASSERT_NEAR } from './testUtils.js';
+import { ASSERT_LT, ASSERT_NEAR } from './testUtils.js';
 
 /**
  * Represents a class for calculating and evaluating the maintainability of a repository.

@@ -5,8 +5,7 @@ import { Correctness } from './correctness.js';
 import { License } from './license.js';
 import { RampUp } from './rampUp.js';
 import { Maintainability } from './maintainability.js';
-import { assert, log } from 'console';
-import { ASSERT_EQ, ASSERT_LT, ASSERT_NEAR } from './testUtils.js';
+import { ASSERT_LT, ASSERT_NEAR } from './testUtils.js';
 
 /**
  * Represents a NetScore object that calculates the net score of a software project based on various metrics.
@@ -112,6 +111,7 @@ export class NetScore extends Metrics {
         .replace(/\s*"\s*/g, '"')
         .replace(/,(?!\s)/g, ', ');
     }
+
 }
 
 /**

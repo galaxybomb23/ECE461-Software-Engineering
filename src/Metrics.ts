@@ -10,16 +10,19 @@ if (!githubToken) {
 }
 let logLevel = process.env.LOG_LEVEL;
 if (!logLevel) {
-    logLevel = 'info';
-    // throw new Error('LOG_LEVEL is not defined in the .env file')
+    // logLevel = 'info';
+    throw new Error('LOG_LEVEL is not defined in the .env file')
 }
 let logFile = process.env.LOG_FILE;
 if (!logFile) {
-    logFile  = "log.log";
-    // throw new Error('LOG_FILE is not defined in the .env file')
+    // logFile  = "logs/run.log";
+    throw new Error('LOG_FILE is not defined in the .env file')
 }
 
+// Create an Octokit instance
 export let OCTOKIT: Octokit = new Octokit({ auth: githubToken, });
+
+// Create a logger
 export let logger: Logger = createLogger({
     level: logLevel,
     format: format.combine(
@@ -27,8 +30,8 @@ export let logger: Logger = createLogger({
       format.printf(({ timestamp, level, message }) => `${timestamp} [${level.toUpperCase()}]: ${message}`)
     ),
     transports: [
-      new transports.Console(), // Log to console
-      new transports.File({ filename: logFile }) // Log to a file
+    // Log to console
+    new transports.File({ filename: logFile, options: { flags: 'a' } }) // Log to a file and append
     ],
   });
 
