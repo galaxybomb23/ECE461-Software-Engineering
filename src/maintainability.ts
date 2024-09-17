@@ -7,8 +7,8 @@ import { ASSERT_LT, ASSERT_NEAR } from './testUtils.js';
 export class Maintainability extends Metrics {
     public maintainability: number = -1;
 
-    constructor(url: string) {
-        super(url);
+    constructor(nativeUrl: string, url: string) {
+        super(nativeUrl, url);
     }
 
     /**
@@ -74,7 +74,7 @@ export class Maintainability extends Metrics {
 
             return -1;
         }
-
+        logger.debug(`Evaluating Maintainability for ${this.url}`);
         const startTime = performance.now();
 
         this.maintainability = await this.calculateMaintainability(this.owner, this.repo);
@@ -83,6 +83,7 @@ export class Maintainability extends Metrics {
         const elapsedTime = Number(endTime - startTime) / 1e6; // Convert to milliseconds
         this.responseTime = elapsedTime;
 
+        logger.debug(`Maintainability: ${this.maintainability}`);
         return this.maintainability;
     }
 }
@@ -100,13 +101,13 @@ export async function MaintainabilityTest(): Promise<{ passed: number, failed: n
 
     for (const test of url_to_expected_score) {
 
-        let maintainability = new Maintainability(test.url);
+        let maintainability = new Maintainability(test.url, test.url);
         let result = await maintainability.evaluate();
 
         let threshold: number = 0.1
 
         ASSERT_NEAR(result, test.expectedMaintainability, threshold, `Maintainability Test for ${test.url}`) ? testsPassed++ : testsFailed++;
-        
+
         ASSERT_LT(maintainability.responseTime, 0.004, `Maintainability Response_Time Test for ${test.url}`) ? testsPassed++ : testsFailed++;
 
         logger.debug(`Maintainability Response time: ${maintainability.responseTime.toFixed(6)}s`);

@@ -13,8 +13,8 @@ export class BusFactor extends Metrics {
      * Constructs a new instance of the CLI class.
      * @param url - The URL to connect to.
      */
-    constructor(url: string) {
-        super(url);
+    constructor(nativeUrl: string, url: string) {
+        super(nativeUrl, url);
     }
 
     /**
@@ -30,7 +30,7 @@ export class BusFactor extends Metrics {
             logger.error(`Rate limit exceeded. Try again after ${resetTime}`);
             return -1;
         }
-
+        logger.debug(`Evaluating BusFactor for ${this.url}`);
         const startTime = performance.now();
         const commitData = await this.getCommitData(this.owner, this.repo);
         this.busFactor = this.calculateBusFactor(commitData);
@@ -38,6 +38,7 @@ export class BusFactor extends Metrics {
         const elapsedTime = Number(endTime - startTime) / 1e6; // Convert to milliseconds
         this.responseTime = elapsedTime;
 
+        logger.debug(`Bus Factor: ${this.busFactor}`);
         return this.busFactor;
     }
 
@@ -75,7 +76,7 @@ export class BusFactor extends Metrics {
 
         //print total number of commits
         logger.debug(`Total number of commits: ${Array.from(commitCounts.values()).reduce((a, b) => a + b, 0)}`);
-        logger.debug("Commit Data:", commitCounts);
+        logger.debug(`Commit Data: ${JSON.stringify(Array.from(commitCounts.entries()))}`);
 
         return commitCounts;
     }
@@ -92,7 +93,7 @@ export class BusFactor extends Metrics {
 
         let commitSum = 0;
         let i = 0;
-        while (commitSum < totalCommits * 0.5) {
+        while (commitSum < totalCommits * 0.85) {
             commitSum += sortedContributors[i][1];
             i++;
         }
@@ -100,7 +101,7 @@ export class BusFactor extends Metrics {
         const rawBusFactor = i / sortedContributors.length;
         const adjustedBusFactor = rawBusFactor * 2;
 
-        return Math.min(adjustedBusFactor);
+        return Math.min(adjustedBusFactor, 1);
     }
 }
 
@@ -114,7 +115,7 @@ export async function BusFactorTest(): Promise<{ passed: number, failed: number 
     let busFactors: BusFactor[] = [];
 
     // First test
-    let busFactor = new BusFactor('https://github.com/cloudinary/cloudinary_npm');
+    let busFactor = new BusFactor('https://github.com/cloudinary/cloudinary_npm', 'https://github.com/cloudinary/cloudinary_npm');
     let result = await busFactor.evaluate();
     ASSERT_EQ(result, 0.15, "Bus Factor Test 1") ? testsPassed++ : testsFailed++;
     ASSERT_LT(busFactor.responseTime, 0.004, "Bus Factor Response Time Test 1") ? testsPassed++ : testsFailed++;
@@ -123,7 +124,7 @@ export async function BusFactorTest(): Promise<{ passed: number, failed: number 
 
 
     // Second test
-    busFactor = new BusFactor('https://github.com/nullivex/nodist');
+    busFactor = new BusFactor('https://github.com/nullivex/nodist', 'https://github.com/nullivex/nodist');
     result = await busFactor.evaluate();
     ASSERT_EQ(result, 0.07, "Bus Factor Test 2") ? testsPassed++ : testsFailed++;
     ASSERT_LT(busFactor.responseTime, 0.002, "Bus Factor Response Time Test 2") ? testsPassed++ : testsFailed++;
@@ -131,7 +132,7 @@ export async function BusFactorTest(): Promise<{ passed: number, failed: number 
     busFactors.push(busFactor);
 
     // Third test
-    busFactor = new BusFactor('https://github.com/lodash/lodash');
+    busFactor = new BusFactor('https://github.com/lodash/lodash', 'https://github.com/lodash/lodash');
     result = await busFactor.evaluate();
     ASSERT_EQ(result, 0.02, "Bus Factor Test 3") ? testsPassed++ : testsFailed++;
     ASSERT_LT(busFactor.responseTime, 0.084, "Bus Factor Response Time Test 3") ? testsPassed++ : testsFailed++;

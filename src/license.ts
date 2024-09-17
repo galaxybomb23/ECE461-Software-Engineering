@@ -12,8 +12,8 @@ import { ASSERT_EQ } from './testUtils.js';
  */
 export class License extends Metrics {
     public license: number = -1;
-    constructor(url: string) {
-        super(url);
+    constructor(nativeUrl: string, url: string) {
+        super(nativeUrl, url);
     }
 
     /**
@@ -23,6 +23,7 @@ export class License extends Metrics {
      * @returns A promise that resolves when the cloning process is complete.
      */
     private async cloneRepository(cloneDir: string): Promise<void> {
+        logger.debug(`Cloning repository to ${cloneDir}`);
         await git.clone({
             fs,
             http,
@@ -107,10 +108,12 @@ export class License extends Metrics {
      * @returns A promise that resolves to the license number.
      */
     public async evaluate(): Promise<number> {
+        logger.debug(`Evaluating License for ${this.url}`);
 
         const cloneDir = path.join('/tmp', 'repo-clon-license');
         let startTime = performance.now();
         try {
+
             await this.cloneRepository(cloneDir);
 
             startTime = performance.now();
@@ -119,7 +122,7 @@ export class License extends Metrics {
             if (licenseInfo) {
                 this.license = this.checkLicenseCompatibility(licenseInfo);
             } else {
-                this.license = -1; // No license information found
+                this.license = 0; // No license information found assume incompatible
             }
         } catch (error) {
             logger.error('Error evaluating license:', error);
@@ -129,6 +132,8 @@ export class License extends Metrics {
         }
         const endTime = performance.now();
         this.responseTime = Number(endTime - startTime) / 1e6; // Convert to milliseconds
+
+        logger.debug(`License: ${this.license}`);
         return this.license;
     }
 }
@@ -143,21 +148,21 @@ export async function LicenseTest(): Promise<{ passed: number, failed: number }>
     let licenses: License[] = [];
 
     // First test
-    let license = new License('https://github.com/cloudinary/cloudinary_npm');
+    let license = new License('https://github.com/cloudinary/cloudinary_npm', 'https://github.com/cloudinary/cloudinary_npm');
     let result = await license.evaluate();
     ASSERT_EQ(result, 1, "License Test 1") ? testsPassed++ : testsFailed++;
     logger.debug(`Response time: ${license.responseTime.toFixed(6)}s`);
     licenses.push(license);
 
     // Second test
-    license = new License('https://github.com/nullivex/nodist');
+    license = new License('https://github.com/nullivex/nodist', 'https://github.com/nullivex/nodist');
     result = await license.evaluate();
     ASSERT_EQ(result, 1, "License Test 2") ? testsPassed++ : testsFailed++;
     logger.debug(`Response time: ${license.responseTime.toFixed(6)}s`);
     licenses.push(license);
 
     // Third test
-    license = new License('https://github.com/lodash/lodash');
+    license = new License('https://github.com/lodash/lodash', 'https://github.com/lodash/lodash');
     result = await license.evaluate();
     ASSERT_EQ(result, 1, "License Test 3") ? testsPassed++ : testsFailed++;
     logger.debug(`Response time: ${license.responseTime.toFixed(6)}s`);

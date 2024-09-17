@@ -36,7 +36,7 @@ async function getGithubUrlFromNpm(npmUrl: string): Promise<string | null> {
         if (repoUrl && repoUrl.includes('github.com')) {
             // Normalize the URL (remove 'git+', 'ssh://git@', and '.git' if present)
             logger.info(`Found GitHub URL for ${npmUrl}: ${repoUrl}`);
-            let normalizedUrl = repoUrl.replace(/^git\+/, '').replace(/^ssh:\/\/git@github.com/, 'https://github.com').replace(/\.git$/, '');
+            let normalizedUrl = repoUrl.replace(/^git\+/, '').replace(/^ssh:\/\/git@github.com/, 'https://github.com').replace(/\.git$/, '').replace(/^git:\/\//, 'https://');
             return normalizedUrl;
         } else {
             return null;
@@ -115,7 +115,7 @@ async function runTests() {
     // Syntax checker stuff (may move to run file in future idk)
     let coverage: number = Math.round(passedTests / (passedTests + failedTests) * 100); // dummy variable for now
     let total: number = passedTests + failedTests;
-    
+
     process.stdout.write(`Total: ${total}\n`);
     process.stdout.write(`Passed: ${passedTests}\n`);
     process.stdout.write(`Coverage: ${coverage}%\n`);
@@ -129,34 +129,45 @@ async function runTests() {
  * @returns A promise that resolves when all URLs have been processed.
  */
 async function processUrls(filePath: string): Promise<void> {
+    logger.debug(`Processing URLs from file: ${filePath}`);
+    let status = await OCTOKIT.rateLimit.get();
+    logger.debug(`Rate limit status: ${status.data.rate.remaining} remaining out of ${status.data.rate.limit}`);
+
     const urls: string[] = fs.readFileSync(filePath, 'utf-8').split('\n');
-    const githubUrls: string[] = [];
+    const githubUrls: [string, string][] = [];
 
     for (const url of urls) {
+
+        //remove whitespace
+        url.trim();
+        // Skip empty lines
+        if (url === '') continue;
+
         if (url.includes('github.com')) {
             // If it's already a GitHub URL, add it to the list
-            githubUrls.push(url);
+            githubUrls.push([url, url]);
         } else if (url.includes('npmjs.com')) {
             // If it's an npm URL, try to get the GitHub URL
             const githubUrl = await getGithubUrlFromNpm(url);
             if (githubUrl) {
-                githubUrls.push(githubUrl);
+                githubUrls.push([url,githubUrl]);
             }
         }
     }
 
     // print the github urls
     logger.debug('GitHub URLs:');
-    logger.debug(githubUrls);
+    for (const url of githubUrls) {
+        logger.debug(`\t${url[0]} -> ${url[1]}`);
+    }
 
     // Process each GitHub URL
     for (const url of githubUrls) {
-        const netScore = new NetScore(url);
+        const netScore = new NetScore(url[0], url[1]);
         const result = await netScore.evaluate();
         process.stdout.write(netScore.toString() + '\n');
-        logger.debug(`URL: ${url}, NetScore: ${result}`);
+        logger.debug(`URL: ${url}, NetScore: ${result}\n`);
     }
-    exit(0);
 }
 
 /**
