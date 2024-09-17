@@ -9,9 +9,8 @@ Rushil Shah
 
 - [Install](#install)
 - [Usage](#usage)
- - [Benchmarks](#benchmarks)
-  - [Options for benchmarks](#options-for-benchmarks)
-    - [Example of usage bench options](#example-of-usage-bench-options)
+    - [Initial Setup](#initial-setup)
+- [Benchmarks](#benchmarks)
 - [Contribution and License Agreement](#contribution-and-license-agreement)
 - [License](#license)
 
@@ -21,10 +20,17 @@ Rushil Shah
 git clone https://github.com/galaxybomb23/ECE461-Software-Engineering
 ```
 
-## Usage
-All usage for this project is through the `run` executable.
 ### Initial Setup
-`cd` into the cloned directory. Run 
+`cd` into the cloned directory. 
+
+Open the `.env` file. Paste your GitHub API token in the quotes after `GITHUB_TOKEN`. Type the desired log level into the quotes after `LOG_LEVEL`. Paste the path of your log file in the quotes after `LOG_FILE`.
+```
+GITHUB_TOKEN = ""
+LOG_LEVEL = ""
+LOG_FILE = ""
+```
+
+Run the following command in a terminal while in the root of the repo:
 ```bash
 ./run install
 ```
