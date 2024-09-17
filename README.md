@@ -7,12 +7,20 @@ Rushil Shah
 
 ## Table of contents
 
+- [Description](#description)
 - [Install](#install)
 - [Usage](#usage)
-    - [Initial Setup](#initial-setup)
-- [Benchmarks](#benchmarks)
+	- [Initial Setup](#initial-setup)
+	- [Building](#building)
+	- [Cleaning](#cleaning)
+	- [Test Bench](#test-bench)
+	- [Text file](#run-with-text-file-of-urls)
+ - [Benchmarks](#benchmarks)
 - [Contribution and License Agreement](#contribution-and-license-agreement)
 - [License](#license)
+
+## Description
+Insert description here
 
 ## Install
 
@@ -20,6 +28,8 @@ Rushil Shah
 git clone https://github.com/galaxybomb23/ECE461-Software-Engineering
 ```
 
+## Usage
+All usage for this project is through the `run` executable.
 ### Initial Setup
 `cd` into the cloned directory. 
 
@@ -30,9 +40,40 @@ LOG_LEVEL = ""
 LOG_FILE = ""
 ```
 
-Run the following command in a terminal while in the root of the repo:
+Run the following command in a terminal while in the root of the repo to install the dependencies:
 ```bash
 ./run install
+```
+
+### Building
+To build the project  run the following command:
+```bash
+./run build
+```
+
+### Cleaning
+To clean the project  run the following command:
+```bash
+./run clean
+```
+
+### Test Bench
+To run the test bench run the following command:
+```bash
+./run test
+```
+
+### Run with text file of URLs
+To run the project with a text file of URLs run the following command:
+```bash
+./run <path/to/file>
+```
+and replace the `<path/to/file>` with the path of the text file you are trying to process. Make sure that the text file contains **1 URL per line**.
+Ex.)
+```
+https://github.com/mrdoob/three.js
+https://github.com/cloudinary/cloudinary_npm
+https://www.npmjs.com/package/express
 ```
 
 ## Benchmarks
