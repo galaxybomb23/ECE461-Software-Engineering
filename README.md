@@ -20,7 +20,9 @@ Rushil Shah
 - [License](#license)
 
 ## Description
-Insert description here
+
+### ACME Module Evaluator CLI
+This repository contains a command-line tool designed to help ACME Corporation’s service engineering teams evaluate and select reliable open-source Node.js modules. The tool analyzes each module based on key metrics such as ramp-up time, correctness, bus factor, maintainer responsiveness, and license compatibility. Results are output in NDJSON format with detailed scores and latencies for each metric.
 
 ## Install
 
@@ -75,8 +77,6 @@ https://github.com/mrdoob/three.js
 https://github.com/cloudinary/cloudinary_npm
 https://www.npmjs.com/package/express
 ```
-
-## Benchmarks
 
 ## Contribution and License Agreement
 If you contribute code to this project, you are implicitly allowing your code
