@@ -33,7 +33,7 @@ All usage for this project is through the `run` executable.
 ### Initial Setup
 `cd` into the cloned directory. 
 
-Open the `.env` file. Paste your GitHub API token in the quotes after `GITHUB_TOKEN`. Type the desired log level into the quotes after `LOG_LEVEL`. Paste the path of your log file in the quotes after `LOG_FILE`.
+Create a new file titled `.env` in the root of the repo. Copy and paste the text below into the file. Paste your GitHub API token in the quotes after `GITHUB_TOKEN`. Type the desired log level into the quotes after `LOG_LEVEL`. Paste the path of your log file in the quotes after `LOG_FILE`.
 ```
 GITHUB_TOKEN = ""
 LOG_LEVEL = ""
