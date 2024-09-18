@@ -13,7 +13,6 @@ import { ASSERT_EQ, ASSERT_LT } from './testUtils.js';
 export class RampUp extends Metrics {
     public rampUp: number = -1;
 
-    // Define your metrics
     private metrics: { [key: string]: { name: string; found: boolean, fileType: string } } = {
         example: { name: 'example', found: false, fileType: 'either' },
         test: { name: 'test', found: false, fileType: 'either' },
@@ -22,6 +21,12 @@ export class RampUp extends Metrics {
         makefile: { name: 'makefile', found: false, fileType: 'file' },
     };
 
+    /**
+     * Constructs an instance of the class.
+     * 
+     * @param nativeUrl - The native URL to be used.
+     * @param url - The URL to be used.
+     */
     constructor(nativeUrl: string, url: string) {
         super(nativeUrl, url);
     }

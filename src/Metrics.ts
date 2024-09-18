@@ -36,8 +36,35 @@ export let logger: Logger = createLogger({
 });
 
 /**
- * Represents a Metrics class.
+ * The `Metrics` abstract class provides a foundation for evaluating metrics related to a GitHub repository.
+ * It includes properties for response time, GitHub API client, repository URL, owner, and repository name.
+ * 
  * @abstract
+ * 
+ * @property {number} responseTime - The response time for the metrics evaluation.
+ * @property {Octokit} octokit - The GitHub API client instance.
+ * @property {string} url - The URL of the repository.
+ * @property {string} owner - The owner of the repository.
+ * @property {string} repo - The name of the repository.
+ * @property {string} NativeURL - The native URL of the repository.
+ * 
+ * @constructor
+ * @param {string} NativeURL - The native URL of the repository.
+ * @param {string} url - The URL of the repository.
+ * 
+ * @method getRepoData
+ * @private
+ * @param {string} url - The GitHub repository URL.
+ * @returns {Object} An object containing the owner and repository name.
+ * @throws {Error} Will throw an error if the URL is invalid.
+ * 
+ * @method evaluate
+ * @abstract
+ * @returns {Promise<number>} A promise that resolves to a number representing the evaluation result.
+ * 
+ * @method getRateLimitStatus
+ * @public
+ * @returns {Promise<Object>} A promise that resolves to an object containing the rate limit data.
  */
 export abstract class Metrics {
     public responseTime: number = 0;
@@ -48,6 +75,15 @@ export abstract class Metrics {
     protected repo: string;
     public NativeURL: string;
 
+    /**
+     * Constructs an instance of the Metrics class.
+     * 
+     * @param NativeURL - The native URL of the repository.
+     * @param url - The URL of the repository.
+     * 
+     * Initializes the `url` and `NativeURL` properties, and extracts the `owner` and `repo` 
+     * from the provided URL using the `getRepoData` method.
+     */
     constructor(NativeURL: string, url: string) {
         this.url = url;
         this.NativeURL = NativeURL;
@@ -56,6 +92,13 @@ export abstract class Metrics {
         this.repo = repo;
     }
 
+    /**
+     * Extracts the owner and repository name from a given GitHub URL.
+     *
+     * @param url - The GitHub repository URL.
+     * @returns An object containing the owner and repository name.
+     * @throws Will throw an error if the URL is invalid.
+     */
     private getRepoData(url: string): { owner: string; repo: string } {
         const regex = /github\.com\/([^/]+)\/([^/]+)/;
         const match = url.match(regex);
@@ -68,6 +111,11 @@ export abstract class Metrics {
 
     abstract evaluate(): Promise<number>;
 
+    /**
+     * Retrieves the current rate limit status from the GitHub API.
+     *
+     * @returns {Promise<Object>} A promise that resolves to an object containing the rate limit data.
+     */
     public async getRateLimitStatus() {
         const rateLimit = await OCTOKIT.rateLimit.get();
         return rateLimit.data.rate;

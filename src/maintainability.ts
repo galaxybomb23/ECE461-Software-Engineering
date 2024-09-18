@@ -7,6 +7,12 @@ import { ASSERT_LT, ASSERT_NEAR } from './testUtils.js';
 export class Maintainability extends Metrics {
     public maintainability: number = -1;
 
+    /**
+     * Constructs an instance of the class.
+     * 
+     * @param nativeUrl - The native URL to be used.
+     * @param url - The URL to be used.
+     */
     constructor(nativeUrl: string, url: string) {
         super(nativeUrl, url);
     }
@@ -88,6 +94,19 @@ export class Maintainability extends Metrics {
     }
 }
 
+/**
+ * Perform a series of maintainability tests on a set of URLs.
+ * 
+ * This function evaluates the maintainability of various repositories by comparing
+ * the calculated maintainability score against an expected value within a specified threshold.
+ * It also checks if the response time of the maintainability evaluation is below a certain limit.
+ * 
+ * @returns {Promise<{ passed: number, failed: number }>} An object containing the number of passed and failed tests.
+ * 
+ * @example
+ * const result = await MaintainabilityTest();
+ * console.log(`Tests Passed: ${result.passed}, Tests Failed: ${result.failed}`);
+ */
 export async function MaintainabilityTest(): Promise<{ passed: number, failed: number }> {
     let testsPassed = 0;
     let testsFailed = 0;
@@ -100,18 +119,13 @@ export async function MaintainabilityTest(): Promise<{ passed: number, failed: n
     ];
 
     for (const test of url_to_expected_score) {
-
         let maintainability = new Maintainability(test.url, test.url);
         let result = await maintainability.evaluate();
-
         let threshold: number = 0.1
 
         ASSERT_NEAR(result, test.expectedMaintainability, threshold, `Maintainability Test for ${test.url}`) ? testsPassed++ : testsFailed++;
-
         ASSERT_LT(maintainability.responseTime, 0.004, `Maintainability Response_Time Test for ${test.url}`) ? testsPassed++ : testsFailed++;
-
         logger.debug(`Maintainability Response time: ${maintainability.responseTime.toFixed(6)}s`);
-
         maintainabilityTests.push(maintainability);
     }
 

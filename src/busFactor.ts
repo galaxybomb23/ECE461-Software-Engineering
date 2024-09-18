@@ -9,9 +9,12 @@ import { ASSERT_EQ, ASSERT_LT } from "./testUtils.js";
  */
 export class BusFactor extends Metrics {
     public busFactor: number = -1;
+
     /**
-     * Constructs a new instance of the CLI class.
-     * @param url - The URL to connect to.
+     * Constructs an instance of the class.
+     * 
+     * @param nativeUrl - The native URL to be used.
+     * @param url - The URL to be used.
      */
     constructor(nativeUrl: string, url: string) {
         super(nativeUrl, url);
@@ -74,7 +77,7 @@ export class BusFactor extends Metrics {
             page++;
         }
 
-        //print total number of commits
+        // Print total number of commits
         logger.debug(`Total number of commits: ${Array.from(commitCounts.values()).reduce((a, b) => a + b, 0)}`);
         logger.debug(`Commit Data: ${JSON.stringify(Array.from(commitCounts.entries()))}`);
 

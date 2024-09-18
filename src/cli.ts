@@ -21,6 +21,26 @@ import { exit } from 'process';
 
 dotenv.config();
 
+/**
+ * Retrieves the GitHub repository URL from an npm package URL.
+ *
+ * @param npmUrl - The URL of the npm package.
+ * @returns A promise that resolves to the GitHub repository URL if found, or null if not found.
+ *
+ * @remarks
+ * This function extracts the package name from the provided npm URL and fetches the package details from the npm registry.
+ * It then checks if the package has a repository field that includes a GitHub URL. If found, it normalizes the URL by
+ * removing 'git+', 'ssh://git@', and '.git' if present, and returns the normalized URL.
+ * If the repository field is not found or does not include a GitHub URL, the function returns null.
+ *
+ * @example
+ * ```typescript
+ * const githubUrl = await getGithubUrlFromNpm('https://www.npmjs.com/package/axios');
+ * console.log(githubUrl); // Output: 'https://github.com/axios/axios'
+ * ```
+ *
+ * @throws Will log an error message if there is an issue fetching the GitHub URL.
+ */
 async function getGithubUrlFromNpm(npmUrl: string): Promise<string | null> {
     try {
         // Extract package name from npm URL
@@ -137,8 +157,6 @@ async function processUrls(filePath: string): Promise<void> {
     const githubUrls: [string, string][] = [];
 
     for (const url of urls) {
-
-        //remove whitespace
         url.trim();
         // Skip empty lines
         if (url === '') continue;
@@ -155,7 +173,7 @@ async function processUrls(filePath: string): Promise<void> {
         }
     }
 
-    // print the github urls
+    // Print the github urls
     logger.debug('GitHub URLs:');
     for (const url of githubUrls) {
         logger.debug(`\t${url[0]} -> ${url[1]}`);
@@ -173,7 +191,6 @@ async function processUrls(filePath: string): Promise<void> {
 /**
  * The main function. Handles command line arguments and executes the appropriate functions.
  */
-
 function main() {
     const argv = yargs(hideBin(process.argv))
         .command('test', 'Run test suite', {}, () => {

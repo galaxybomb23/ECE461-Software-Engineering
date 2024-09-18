@@ -12,6 +12,13 @@ import { ASSERT_EQ } from './testUtils.js';
  */
 export class License extends Metrics {
     public license: number = -1;
+    
+    /**
+     * Constructs an instance of the class.
+     * 
+     * @param nativeUrl - The native URL to be used.
+     * @param url - The URL to be used.
+     */
     constructor(nativeUrl: string, url: string) {
         super(nativeUrl, url);
     }

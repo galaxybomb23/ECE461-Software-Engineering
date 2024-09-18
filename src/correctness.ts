@@ -10,8 +10,10 @@ export class Correctness extends Metrics {
     public correctness: number = -1;
 
     /**
-     * Constructs a new instance of the class.
-     * @param url The URL to be passed to the constructor.
+     * Constructs an instance of the class.
+     * 
+     * @param nativeUrl - The native URL to be used.
+     * @param url - The URL to be used.
      */
     constructor(nativeUrl: string, url: string) {
         super(nativeUrl, url);
@@ -110,26 +112,33 @@ export async function CorrectnessTest(): Promise<{ passed: number, failed: numbe
     let testsPassed = 0;
     let testsFailed = 0;
 
-    // Test 1
-    const correctness = new Correctness('https://github.com/cloudinary/cloudinary_npm', 'https://github.com/cloudinary/cloudinary_npm');
-    const result: number = await correctness.evaluate();
-    const expectedValue = 0.933333333; // Expected value is 0.93333...
-    ASSERT_EQ(result, expectedValue, 'Correctness test 1') ? testsPassed++ : testsFailed++;
-    logger.debug(`Response time: ${correctness.responseTime.toFixed(6)}s`);
+    const testCases = [
+        {
+            nativeUrl: 'https://github.com/cloudinary/cloudinary_npm',
+            url: 'https://github.com/cloudinary/cloudinary_npm',
+            expectedValue: 0.933333333,
+            description: 'Correctness test 1'
+        },
+        {
+            nativeUrl: 'https://github.com/nullivex/nodist',
+            url: 'https://github.com/nullivex/nodist',
+            expectedValue: 0.90909091,
+            description: 'Correctness test 2'
+        },
+        {
+            nativeUrl: 'https://github.com/Coop8/Coop8',
+            url: 'https://github.com/Coop8/Coop8',
+            expectedValue: 1,
+            description: 'Correctness test 3'
+        }
+    ];
 
-    // Test 2
-    const correctness2 = new Correctness('https://github.com/nullivex/nodist', 'https://github.com/nullivex/nodist');
-    const result2: number = await correctness2.evaluate();
-    const expectedValue2 = 0.90909091; // Expected value is 0.90909091
-    ASSERT_EQ(result2, expectedValue2, 'Correctness test 2') ? testsPassed++ : testsFailed++;
-    logger.debug(`Response time: ${correctness2.responseTime.toFixed(6)}s`);
-
-    // Test 3
-    const correctness3 = new Correctness('https://github.com/Coop8/Coop8', 'https://github.com/Coop8/Coop8');
-    const result3: number = await correctness3.evaluate();
-    const expectedValue3 = 1; // Expected value is 1
-    ASSERT_EQ(result3, expectedValue3, 'Correctness test 3') ? testsPassed++ : testsFailed++;
-    logger.debug(`Response time: ${correctness3.responseTime.toFixed(6)}s`);
+    for (const testCase of testCases) {
+        const correctness = new Correctness(testCase.nativeUrl, testCase.url);
+        const result: number = await correctness.evaluate();
+        ASSERT_EQ(result, testCase.expectedValue, testCase.description) ? testsPassed++ : testsFailed++;
+        logger.debug(`Response time for ${testCase.description}: ${correctness.responseTime.toFixed(6)}s`);
+    }
 
     return { passed: testsPassed, failed: testsFailed };
 }
