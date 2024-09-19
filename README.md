@@ -47,6 +47,14 @@ dos2unix run test.sh test/URLS.txt checker/one-url.txt
 `cd` into the cloned directory. 
 
 Create a new file titled `.env` in the root of the repo. Copy and paste the text below into the file. Paste your GitHub API token in the quotes after `GITHUB_TOKEN`. Type the desired log level into the quotes after `LOG_LEVEL`. Paste the path of your log file in the quotes after `LOG_FILE`.
+
+Log levels include:
+|Debug|Level| 
+|--|--|
+|0|Error|
+|1|Info|
+|2|Debug|
+
 ```
 GITHUB_TOKEN = "<github_token>"
 LOG_LEVEL = "info"
