@@ -8,7 +8,7 @@ import axios from 'axios';
 import fs from 'fs';
 
 // Proprietaries
-import { OCTOKIT, logger } from './Metrics.js';
+import { OCTOKIT, logger, logLevel, logFile } from './Metrics.js';
 import { NetScore } from './netScore.js';
 // Tests
 import { BusFactorTest } from './busFactor.js';
@@ -97,7 +97,7 @@ async function runTests() {
 
     // Calc used rate limit 📝
     let usedRateLimit = apiRemaining[0] - apiRemaining[apiRemaining.length - 1];
-    logger.debug(`Rate Limit Usage:`);
+    logger.debug(`\nRate Limit Usage:`);
     logger.debug(`License Test: ${apiRemaining[0] - apiRemaining[1]}`);
     logger.debug(`Bus Factor Test: ${apiRemaining[1] - apiRemaining[2]}`);
     logger.debug(`Correctness Test: ${apiRemaining[2] - apiRemaining[3]}`);
@@ -129,7 +129,7 @@ async function runTests() {
  * @returns A promise that resolves when all URLs have been processed.
  */
 async function processUrls(filePath: string): Promise<void> {
-    logger.debug(`Processing URLs from file: ${filePath}`);
+    logger.info(`Processing URLs from file: ${filePath}`);
     let status = await OCTOKIT.rateLimit.get();
     logger.debug(`Rate limit status: ${status.data.rate.remaining} remaining out of ${status.data.rate.limit}`);
 
@@ -161,12 +161,13 @@ async function processUrls(filePath: string): Promise<void> {
         logger.debug(`\t${url[0]} -> ${url[1]}`);
     }
 
+    logger.debug('URLs processed. Starting evaluation...');
     // Process each GitHub URL
     for (const url of githubUrls) {
         const netScore = new NetScore(url[0], url[1]);
         const result = await netScore.evaluate();
         process.stdout.write(netScore.toString() + '\n');
-        logger.debug(`URL: ${url}, NetScore: ${result}\n`);
+        logger.debug(netScore.toString());
     }
 }
 
@@ -175,6 +176,10 @@ async function processUrls(filePath: string): Promise<void> {
  */
 
 function main() {
+    logger.info('Starting CLI...');
+    logger.info(`LOG_FILE: ${logFile}`);
+    logger.info('GITHUB_TOKEN: [REDACTED]');
+    logger.info(`LOG_LEVEL: ${logLevel}`);
     const argv = yargs(hideBin(process.argv))
         .command('test', 'Run test suite', {}, () => {
             runTests();
@@ -197,5 +202,7 @@ function main() {
         .help()
         .alias('help', 'h')
         .argv;
+
+    logger.info('CLI finished.\n');
 }
 main();
