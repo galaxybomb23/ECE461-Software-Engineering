@@ -20,6 +20,19 @@ export class NetScore extends Metrics {
     rampUp: RampUp;
     maintainability: Maintainability;
 
+    /**
+     * Constructs an instance of the class.
+     * 
+     * @param nativeUrl - The native URL of the project.
+     * @param url - The URL of the project.
+     * 
+     * Initializes the following properties:
+     * - `busFactor`: An instance of `BusFactor` initialized with `nativeUrl` and `url`.
+     * - `correctness`: An instance of `Correctness` initialized with `nativeUrl` and `url`.
+     * - `license`: An instance of `License` initialized with `nativeUrl` and `url`.
+     * - `rampUp`: An instance of `RampUp` initialized with `nativeUrl` and `url`.
+     * - `maintainability`: An instance of `Maintainability` initialized with `nativeUrl` and `url`.
+     */
     constructor(nativeUrl: string, url: string) {
         super(nativeUrl, url);
         this.busFactor = new BusFactor(nativeUrl, url);
