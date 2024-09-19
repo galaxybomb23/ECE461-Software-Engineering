@@ -15,7 +15,6 @@ Rushil Shah
 	- [Cleaning](#cleaning)
 	- [Test Bench](#test-bench)
 	- [Text file](#run-with-text-file-of-urls)
- - [Benchmarks](#benchmarks)
 - [Contribution and License Agreement](#contribution-and-license-agreement)
 - [License](#license)
 
