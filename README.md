@@ -56,7 +56,7 @@ Log levels include:
 
 ```
 GITHUB_TOKEN = "<github_token>"
-LOG_LEVEL = "info"
+LOG_LEVEL = "1"
 LOG_FILE = "logs/run.log"
 ```
 
