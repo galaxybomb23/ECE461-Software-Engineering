@@ -32,6 +32,17 @@ git clone https://github.com/galaxybomb23/ECE461-Software-Engineering
 
 ## Usage
 All usage for this project is through the `run` executable.
+
+### NOTE for WSL users:
+You may encounter the following error when trying to run the checker/run script
+```bash
+bad interpreter: /bin/bash^M: no such file or directory
+```
+This is because windows saves the file using CRLF format while WSL expects it to be a LF format. To fix this you need to change the line ending for the file to LF. This can be done in VScode or using `dos2unix` and running the following command:
+```bash
+dos2unix run test.sh test/URLS.txt checker/one-url.txt 
+```
+
 ### Initial Setup
 `cd` into the cloned directory. 
 
