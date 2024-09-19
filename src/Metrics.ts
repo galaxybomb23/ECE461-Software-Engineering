@@ -3,45 +3,41 @@ import { createLogger, format, Logger, transports } from 'winston';
 import dotenv from 'dotenv';
 
 dotenv.config();
+
 // Access the token value
 export const githubToken = process.env.GITHUB_TOKEN;
 if (!githubToken) {
     throw new Error('GITHUB_TOKEN is not defined in the .env file');
 }
+
+// Determine log level from environment variable
 export let logLevel = process.env.LOG_LEVEL?.toLowerCase();
 if (!logLevel) {
     // logLevel = 'info';
     throw new Error('LOG_LEVEL is not defined in the .env file')
 }
 else{
-    if (typeof(logLevel) === 'string'){
-        logLevel = logLevel.toLowerCase();
-           switch(logLevel){
-            case "0":
-                logLevel = 'error';
-                break;
-            case "1":
-                logLevel = 'info';
-                break;
-            case "2":
-                logLevel = 'debug';
-                break;
-           }
-        }
-        else{
-            throw new Error('LOG_LEVEL is not a string in the .env file')
-        }
-            
-            
+       switch(logLevel){
+        case "0":
+            logLevel = 'error';
+            break;
+        case "1":
+            logLevel = 'info';
+            break;
+        case "2":
+            logLevel = 'debug';
+            break;
+       }
 }
+            
+            
 export let logFile = process.env.LOG_FILE;
 if (!logFile) {
-    // logFile  = "logs/run.log";
-    throw new Error('LOG_FILE is not defined in the .env file')
+    throw new Error('LOG_FILE is not defined in the .env file');
 }
 
 // Create an Octokit instance
-export let OCTOKIT: Octokit = new Octokit({ auth: githubToken, });
+export let OCTOKIT: Octokit = new Octokit({ auth: githubToken });
 
 // Create a logger
 export let logger: Logger = createLogger({
@@ -51,8 +47,7 @@ export let logger: Logger = createLogger({
         format.printf(({ timestamp, level, message }) => `${timestamp} [${level.toUpperCase()}]: ${message}`)
     ),
     transports: [
-        // Log to console
-        new transports.File({ filename: logFile, options: { flags: 'a' } }) // Log to a file and append
+        new transports.File({ filename: logFile, options: { flags: 'a' } }) // Append logs to a file
     ],
 });
 
@@ -61,7 +56,6 @@ export let logger: Logger = createLogger({
  * It includes properties for response time, GitHub API client, repository URL, owner, and repository name.
  * 
  * @abstract
- * 
  * @property {number} responseTime - The response time for the metrics evaluation.
  * @property {Octokit} octokit - The GitHub API client instance.
  * @property {string} url - The URL of the repository.
@@ -124,12 +118,18 @@ export abstract class Metrics {
         const regex = /github\.com\/([^/]+)\/([^/]+)/;
         const match = url.match(regex);
         if (!match) {
-            logger.error(`${url} is an invalid Github URL`);
-            throw new Error(`Invalid GitHub URL ${url}`);
+            logger.error(`${url} is an invalid GitHub URL`);
+            throw new Error(`Invalid GitHub URL: ${url}`);
         }
         return { owner: match[1], repo: match[2] };
     }
 
+    /**
+     * Abstract method to evaluate the repository. Must be implemented in subclasses.
+     * 
+     * @abstract
+     * @returns {Promise<number>} A promise that resolves to a number representing the evaluation result.
+     */
     abstract evaluate(): Promise<number>;
 
     /**

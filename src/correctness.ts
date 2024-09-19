@@ -3,26 +3,39 @@ import { performance } from 'perf_hooks';
 import { ASSERT_EQ } from './testUtils.js';
 
 /**
- * Represents a class that calculates the correctness of a repository based on its issues data.
- * @extends Metrics
+ * @class Correctness
+ * @brief A class that calculates the correctness of a repository based on its issues data.
+ * 
+ * The correctness is evaluated based on the ratio of open bug issues to total open issues in the repository.
+ * This class extends the Metrics class.
  */
 export class Correctness extends Metrics {
+    /**
+     * @brief The calculated correctness of the repository.
+     * 
+     * Initialized to -1 until the correctness is evaluated.
+     */
     public correctness: number = -1;
 
     /**
-     * Constructs an instance of the class.
+     * @brief Constructs a new instance of the Correctness class.
      * 
-     * @param nativeUrl - The native URL to be used.
-     * @param url - The URL to be used.
+     * Initializes the class with the native URL and the repository URL.
+     * 
+     * @param nativeUrl The native URL to connect to.
+     * @param url The repository URL.
      */
     constructor(nativeUrl: string, url: string) {
         super(nativeUrl, url);
     }
 
     /**
-     * Asynchronously evaluates the correctness of the code.
+     * @brief Asynchronously evaluates the correctness of the code.
      * 
-     * @returns A promise that resolves to the correctness value.
+     * Fetches issues data and calculates correctness based on the ratio of open bug issues
+     * to total open issues.
+     * 
+     * @return A promise that resolves to the correctness value.
      */
     public async evaluate(): Promise<number> {
         const rateLimitStatus = await this.getRateLimitStatus();
@@ -33,6 +46,7 @@ export class Correctness extends Metrics {
             return -1;
         }
         logger.debug(`Evaluating Correctness for ${this.url}`);
+        
         // Calculate response time of evaluate method
         const startTime = performance.now();
         this.correctness = await this.calculateCorrectness();
@@ -45,12 +59,14 @@ export class Correctness extends Metrics {
     }
 
     /**
-     * Calculates the correctness of the system based on the number of open bug issues and total open issues.
+     * @brief Calculates the correctness of the system based on the number of open bug issues and total open issues.
      * 
-     * @returns A Promise that resolves to a number representing the correctness of the system.
-     *          Returns 1 if there are no issues reported.
-     *          Returns a value between 0 and 1 representing the correctness percentage if there are issues.
-     *          Returns -1 if there was an error calculating the correctness.
+     * If no issues are reported, the correctness is considered perfect (1).
+     * Otherwise, correctness is calculated as a value between 0 and 1, representing the percentage of correctness.
+     * 
+     * @return A promise that resolves to a number representing the correctness of the system.
+     *         Returns 1 if there are no issues reported, a value between 0 and 1 representing the correctness percentage, 
+     *         or -1 if there was an error calculating correctness.
      */
     private async calculateCorrectness(): Promise<number> {
         try {
@@ -72,10 +88,12 @@ export class Correctness extends Metrics {
     }
 
     /**
-     * Fetches the issues data from the repository.
+     * @brief Fetches the issues data from the repository.
      * 
-     * @returns A promise that resolves to an object containing the number of open bug issues 
-     *          and the total number of open issues.
+     * Retrieves the number of open bug issues and the total number of open issues.
+     * 
+     * @return A promise that resolves to an object containing the number of open bug issues 
+     * and the total number of open issues.
      * @throws {Error} If the repository URL is invalid or if there is an error fetching the data.
      */
     private async fetchIssuesData(): Promise<{ openBugIssues: number; totalOpenIssues: number }> {
@@ -102,6 +120,7 @@ export class Correctness extends Metrics {
         }
     }
 }
+
 
 /**
  * Performs correctness tests on the given URLs and returns the number of tests passed and failed.

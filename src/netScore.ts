@@ -8,30 +8,61 @@ import { Maintainability } from './maintainability.js';
 import { ASSERT_LT, ASSERT_NEAR } from './testUtils.js';
 
 /**
- * Represents a NetScore object that calculates the net score of a software project based on various metrics.
+ * @class NetScore
+ * @brief Represents a NetScore object that calculates the net score of a software project based on various metrics.
+ * 
+ * This class extends the Metrics class and combines metrics from multiple sources to compute a net score. 
+ * The net score is calculated based on weighted metrics such as BusFactor, Correctness, License, RampUp, and Maintainability.
+ * 
  * @extends Metrics
  */
 export class NetScore extends Metrics {
+    /**
+     * @brief Weights assigned to each metric.
+     * 
+     * The weights are used in the calculation of the net score. They are provided as an array of numbers.
+     */
     weights: Array<number> = [19.84, 7.47, 30.69, 42.0];
+
+    /**
+     * @brief The calculated net score of the repository.
+     * 
+     * Initialized to 0 until evaluated.
+     */
     netScore: number = 0;
+
+    /**
+     * @brief An instance of the BusFactor metric.
+     */
     busFactor: BusFactor;
+
+    /**
+     * @brief An instance of the Correctness metric.
+     */
     correctness: Correctness;
+
+    /**
+     * @brief An instance of the License metric.
+     */
     license: License;
+
+    /**
+     * @brief An instance of the RampUp metric.
+     */
     rampUp: RampUp;
+
+    /**
+     * @brief An instance of the Maintainability metric.
+     */
     maintainability: Maintainability;
 
     /**
-     * Constructs an instance of the class.
+     * @brief Constructs an instance of the NetScore class.
      * 
-     * @param nativeUrl - The native URL of the project.
-     * @param url - The URL of the project.
+     * Initializes each metric with the provided native URL and project URL.
      * 
-     * Initializes the following properties:
-     * - `busFactor`: An instance of `BusFactor` initialized with `nativeUrl` and `url`.
-     * - `correctness`: An instance of `Correctness` initialized with `nativeUrl` and `url`.
-     * - `license`: An instance of `License` initialized with `nativeUrl` and `url`.
-     * - `rampUp`: An instance of `RampUp` initialized with `nativeUrl` and `url`.
-     * - `maintainability`: An instance of `Maintainability` initialized with `nativeUrl` and `url`.
+     * @param nativeUrl The native URL of the project.
+     * @param url The URL of the project.
      */
     constructor(nativeUrl: string, url: string) {
         super(nativeUrl, url);
@@ -43,7 +74,11 @@ export class NetScore extends Metrics {
     }
 
     /**
-     * Asynchronously evaluates the net score based on various metrics.
+     * @brief Asynchronously evaluates the net score based on various metrics.
+     * 
+     * Evaluates all metrics and calculates the net score using weighted averages. If any metric fails, 
+     * the net score is set to 0. The score is clamped between 0 and 1. 
+     * Also calculates and logs the response time for evaluation.
      * 
      * @returns A promise that resolves to the calculated net score.
      */
@@ -92,15 +127,12 @@ export class NetScore extends Metrics {
     }
 
     /**
-     * Returns a string representation of the `netScore` object.
-     * The returned string is in the format:
-     * `{"URL":"<url>", "NetScore": <netScore>, "NetScore_Latency": <responseTime>, 
-     * "RampUp": <rampUp>, "RampUp_Latency": <rampUpResponseTime>, 
-     * "Correctness": <correctness>, "Correctness_Latency": <correctnessResponseTime>, 
-     * "BusFactor": <busFactor>, "BusFactor_Latency": <busFactorResponseTime>, 
-     * "ResponsiveMaintainer": <maintainability>, 
-     * "ResponsiveMaintainer_Latency": <maintainabilityResponseTime>, "License": <license>, 
-     * "License_Latency": <licenseResponseTime>}`
+     * @brief Returns a string representation of the `netScore` object.
+     * 
+     * The returned string includes detailed information about the net score, the latencies of various metrics, and other related data. 
+     * The format is a JSON-like string with fields for each metric and its corresponding latency.
+     * 
+     * @returns A string representation of the NetScore object.
      */
     toString(): string {
         return `{
@@ -124,8 +156,8 @@ export class NetScore extends Metrics {
             .replace(/\s*"\s*/g, '"')
             .replace(/,(?!\s)/g, ', ');
     }
-
 }
+
 
 /**
  * This function performs a series of net score tests on different URLs.

@@ -2,32 +2,46 @@ import { Metrics, logger } from "./Metrics.js";
 import { ASSERT_LT, ASSERT_NEAR } from './testUtils.js';
 
 /**
- * Represents a class for calculating and evaluating the maintainability of a repository.
+ * @class Maintainability
+ * @brief A class for calculating and evaluating the maintainability of a repository.
+ * 
+ * This class extends the Metrics class and provides methods to assess the maintainability of a repository by 
+ * analyzing the issue resolution time.
  */
 export class Maintainability extends Metrics {
+    /**
+     * @brief The maintainability score of the repository.
+     * 
+     * Initialized to -1 until evaluated.
+     */
     public maintainability: number = -1;
 
     /**
-     * Constructs an instance of the class.
+     * @brief Constructs a new instance of the Maintainability class.
      * 
-     * @param nativeUrl - The native URL to be used.
-     * @param url - The URL to be used.
+     * Initializes the class with the native URL and the repository URL.
+     * 
+     * @param nativeUrl The native URL to connect to.
+     * @param url The repository URL.
      */
     constructor(nativeUrl: string, url: string) {
         super(nativeUrl, url);
     }
 
     /**
-     * Calculates the maintainability score for a given repository.
+     * @brief Calculates the maintainability score for a given repository.
      * 
-     * @param owner - The owner of the repository.
-     * @param repo - The name of the repository.
-     * @returns The maintainability score, a number between 0 and 1. A higher score indicates better maintainability.
-     *          Returns -1 if there was an error fetching the issues.
+     * Fetches the most recent issues from the repository and calculates the average issue resolution time. 
+     * The score ranges between 0 and 1, where a higher score indicates better maintainability.
+     * 
+     * @param owner The owner of the repository.
+     * @param repo The name of the repository.
+     * @return A promise that resolves to the maintainability score, a number between 0 and 1.
+     *         Returns -1 if there was an error fetching the issues.
      */
     private async calculateMaintainability(owner: string, repo: string): Promise<number> {
         try {
-            // Fetch the most recent 100 issues for the repository
+            // Fetch the most recent 25 issues for the repository
             const { data: issues } = await this.octokit.issues.listForRepo({
                 owner: owner,
                 repo: repo,
@@ -67,9 +81,11 @@ export class Maintainability extends Metrics {
     }
 
     /**
-     * Evaluates the maintainability of the code.
+     * @brief Evaluates the maintainability of the code based on the issue resolution time.
      * 
-     * @returns A promise that resolves to the maintainability score.
+     * If the GitHub API rate limit is exceeded, the evaluation will not proceed.
+     * 
+     * @return A promise that resolves to the maintainability score.
      */
     public async evaluate(): Promise<number> {
         const rateLimitStatus = await this.getRateLimitStatus();
@@ -80,6 +96,7 @@ export class Maintainability extends Metrics {
 
             return -1;
         }
+
         logger.debug(`Evaluating Maintainability for ${this.url}`);
         const startTime = performance.now();
 
@@ -93,6 +110,7 @@ export class Maintainability extends Metrics {
         return this.maintainability;
     }
 }
+
 
 /**
  * Perform a series of maintainability tests on a set of URLs.

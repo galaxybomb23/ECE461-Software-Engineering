@@ -3,27 +3,40 @@ import { Metrics, logger } from "./Metrics.js";
 import { ASSERT_EQ, ASSERT_LT } from "./testUtils.js";
 
 /**
- * Represents a class that calculates the bus factor of a repository.
- * The bus factor is a measure of the number of developers that need to be hit by a bus (or leave the project) 
+ * @class BusFactor
+ * @brief A class that calculates the bus factor of a repository.
+ * 
+ * The bus factor is a measure of how many developers would need to leave a project
  * before it becomes infeasible to maintain the codebase.
+ * This class extends the Metrics class and provides methods to evaluate the bus factor.
  */
 export class BusFactor extends Metrics {
+    /**
+     * @brief The calculated bus factor of the repository.
+     * 
+     * Initialized to -1 until the bus factor is evaluated.
+     */
     public busFactor: number = -1;
 
     /**
-     * Constructs an instance of the class.
+     * @brief Constructs a new instance of the BusFactor class.
      * 
-     * @param nativeUrl - The native URL to be used.
-     * @param url - The URL to be used.
+     * Initializes the class with the native URL and the repository URL.
+     * 
+     * @param nativeUrl The native URL to connect to.
+     * @param url The repository URL.
      */
     constructor(nativeUrl: string, url: string) {
         super(nativeUrl, url);
     }
 
     /**
-     * Asynchronously evaluates the bus factor of a repository.
+     * @brief Asynchronously evaluates the bus factor of the repository.
      * 
-     * @returns A promise that resolves to the calculated bus factor.
+     * Fetches commit data and calculates the bus factor based on the percentage
+     * of contributions from top contributors.
+     * 
+     * @return A promise that resolves to the calculated bus factor.
      */
     public async evaluate(): Promise<number> {
         const rateLimitStatus = await this.getRateLimitStatus();
@@ -46,17 +59,20 @@ export class BusFactor extends Metrics {
     }
 
     /**
-     * Retrieves commit data for a given owner and repository.
+     * @brief Retrieves commit data for a given repository.
      * 
-     * @param owner - The owner of the repository.
-     * @param repo - The name of the repository.
-     * @returns A Promise that resolves to a Map containing the commit data, where the keys are the authors' 
-     *          usernames and the values are the number of commits made by each author.
+     * Fetches commit data from the repository, retrieving the number of commits
+     * made by each contributor.
+     * 
+     * @param owner The owner of the repository.
+     * @param repo The name of the repository.
+     * @return A promise that resolves to a Map where the keys are authors' usernames
+     * and the values are the number of commits made by each author.
      */
     private async getCommitData(owner: string, repo: string): Promise<Map<string, number>> {
         const commitCounts = new Map<string, number>();
         let page = 1;
-        while (true && page < 10) { // Limit to 1000 commits
+        while (true && page < 10) {
             const { data: commits } = await this.octokit.repos.listCommits({
                 owner,
                 repo,
@@ -85,10 +101,13 @@ export class BusFactor extends Metrics {
     }
 
     /**
-     * Calculates the bus factor based on the commit data.
+     * @brief Calculates the bus factor based on the commit data.
      * 
-     * @param commitData - A map containing the number of commits for each contributor.
-     * @returns The calculated bus factor.
+     * Determines the number of key contributors who account for 85% of the total commits.
+     * The bus factor is adjusted and limited to a value between 0 and 1.
+     * 
+     * @param commitData A Map where the keys are authors' usernames and the values are the number of commits.
+     * @return The calculated bus factor.
      */
     private calculateBusFactor(commitData: Map<string, number>): number {
         const totalCommits = Array.from(commitData.values()).reduce((a, b) => a + b, 0);
@@ -107,6 +126,7 @@ export class BusFactor extends Metrics {
         return Math.min(adjustedBusFactor, 1);
     }
 }
+
 
 /**
  * Executes a series of tests to evaluate the bus factor of different GitHub repositories.
