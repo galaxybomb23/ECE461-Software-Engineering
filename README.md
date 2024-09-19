@@ -37,9 +37,9 @@ All usage for this project is through the `run` executable.
 
 Create a new file titled `.env` in the root of the repo. Copy and paste the text below into the file. Paste your GitHub API token in the quotes after `GITHUB_TOKEN`. Type the desired log level into the quotes after `LOG_LEVEL`. Paste the path of your log file in the quotes after `LOG_FILE`.
 ```
-GITHUB_TOKEN = ""
-LOG_LEVEL = ""
-LOG_FILE = ""
+GITHUB_TOKEN = "<github_token>"
+LOG_LEVEL = "info"
+LOG_FILE = "logs/run.log"
 ```
 
 Run the following command in a terminal while in the root of the repo to install the dependencies:
