@@ -15,6 +15,7 @@ Rushil Shah
 	- [Cleaning](#cleaning)
 	- [Test Bench](#test-bench)
 	- [Text file](#run-with-text-file-of-urls)
+- [Known Limitations](#known-limitations)
 - [Contribution and License Agreement](#contribution-and-license-agreement)
 - [License](#license)
 
@@ -95,6 +96,9 @@ https://github.com/mrdoob/three.js
 https://github.com/cloudinary/cloudinary_npm
 https://www.npmjs.com/package/express
 ```
+
+## Known Limitations
+- We do not utilize hermetic testing (i.e. mocking). As a result, the test bench will make API calls using your token. If external repositories change/receive pushes it's possible for our calculated metrics to change and fail some test cases.
 
 ## Contribution and License Agreement
 If you contribute code to this project, you are implicitly allowing your code
