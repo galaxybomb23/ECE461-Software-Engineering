@@ -1,15 +1,17 @@
 #!/bin/bash
 
 # change this to run from any directory
+LOGFILE=logs/run.log
 original_dir=$(pwd)
 cd "$(dirname "$0")"
 mkdir -p logs
-echo "Running from $(pwd)" > logs/run.log
+echo "Running from $(pwd)" > $LOGFILE
 
 
 
 # Function to install and use the latest version of Node.js
 install_latest_node() {
+  echo "Installing the latest version of Node.js..." >> $LOGFILE
   # Detect the platform (Linux/Mac/Windows)
   unameOut="$(uname -s)"
   case "${unameOut}" in
@@ -24,10 +26,10 @@ install_latest_node() {
     if [ "$machine" = "Linux" ] || [ "$machine" = "Mac" ]; then
       curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
     elif [ "$machine" = "Windows" ]; then
-      echo "Please install nvm manually from https://github.com/coreybutler/nvm-windows/releases"
+      echo "Please install nvm manually from https://github.com/coreybutler/nvm-windows/releases" >> $LOGFILE
       exit 1
     else
-      echo "Unsupported platform: ${machine}"
+      echo "Unsupported platform: ${machine}" >> $LOGFILE
       exit 1
     fi
     export NVM_DIR="$HOME/.nvm"
@@ -67,13 +69,16 @@ case $1 in
     build
     ;;
   clean)
+    echo "Cleaning the project..." >> logs/run.log
     rm -rf build
     rm -rf dist
     ;;
   *)
-    build
+    # build # Uncomment this line if you want to build the project before running the script
+    echo "Running the script with '$@'..." >> logs/run.log
     ./dist/cli.js "$@" 
     exitCode=$?
+    echo "Script exited with code $exitCode" >> logs/run.log
     ;;
 esac
 

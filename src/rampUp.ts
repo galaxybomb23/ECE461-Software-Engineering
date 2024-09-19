@@ -114,6 +114,7 @@ export class RampUp extends Metrics {
  * @returns A promise that resolves to an object containing the number of tests passed and failed.
  */
 export async function RampUpTest(): Promise<{ passed: number, failed: number }> {
+    logger.info('\nRunning RampUp Tests');
     let testsPassed = 0;
     let testsFailed = 0;
     let rampUps: RampUp[] = [];

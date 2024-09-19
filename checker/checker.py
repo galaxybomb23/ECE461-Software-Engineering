@@ -147,7 +147,7 @@ def run_test_suite() -> int:
         total_correct += 2
         print(f"{GREEN}> Test suite achieved 80% or greater line coverage. (2/2 points){RESET}")
     elif line_coverage >= 60:
-        tptal_correct += 1
+        total_correct += 1
         print(f"{YELLOW}> Test suite achieved 60% or greater line coverage. (1/2 points){RESET}")
     else:
         print(f"{RED}> Test suite achieved less than 60% line coverage. (0/2 points) {RESET}")

@@ -143,6 +143,7 @@ export class License extends Metrics {
  * @returns A promise that resolves to an object containing the number of tests passed and failed.
  */
 export async function LicenseTest(): Promise<{ passed: number, failed: number }> {
+    logger.info('\nRunning License Tests...');
     let testsPassed = 0;
     let testsFailed = 0;
     let licenses: License[] = [];

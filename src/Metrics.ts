@@ -4,16 +4,37 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 // Access the token value
-const githubToken = process.env.GITHUB_TOKEN;
+export const githubToken = process.env.GITHUB_TOKEN;
 if (!githubToken) {
     throw new Error('GITHUB_TOKEN is not defined in the .env file');
 }
-let logLevel = process.env.LOG_LEVEL;
+export let logLevel = process.env.LOG_LEVEL?.toLowerCase();
 if (!logLevel) {
     // logLevel = 'info';
     throw new Error('LOG_LEVEL is not defined in the .env file')
 }
-let logFile = process.env.LOG_FILE;
+else{
+    if (typeof(logLevel) === 'string'){
+        logLevel = logLevel.toLowerCase();
+           switch(logLevel){
+            case "0":
+                logLevel = 'error';
+                break;
+            case "1":
+                logLevel = 'debug';
+                break;
+            case "2":
+                logLevel = 'info';
+                break;
+           }
+        }
+        else{
+            throw new Error('LOG_LEVEL is not a string in the .env file')
+        }
+            
+            
+}
+export let logFile = process.env.LOG_FILE;
 if (!logFile) {
     // logFile  = "logs/run.log";
     throw new Error('LOG_FILE is not defined in the .env file')
