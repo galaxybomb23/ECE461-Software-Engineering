@@ -21,10 +21,10 @@ else{
                 logLevel = 'error';
                 break;
             case "1":
-                logLevel = 'debug';
+                logLevel = 'info';
                 break;
             case "2":
-                logLevel = 'info';
+                logLevel = 'debug';
                 break;
            }
         }
