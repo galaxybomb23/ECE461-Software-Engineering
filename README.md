@@ -97,6 +97,12 @@ https://github.com/cloudinary/cloudinary_npm
 https://www.npmjs.com/package/express
 ```
 
+### ./test.sh
+This script is used to evaluate the effectiveness of our metric equations. To run it use the following command:
+```bash
+./test.sh
+```
+
 ## Known Limitations
 - We do not utilize hermetic testing (i.e. mocking). As a result, the test bench will make API calls using your token. If external repositories change/receive pushes it's possible for our calculated metrics to change and fail some test cases.
 
