@@ -109,6 +109,7 @@ export class Correctness extends Metrics {
  * @returns A promise that resolves to an object containing the number of tests passed and failed.
  */
 export async function CorrectnessTest(): Promise<{ passed: number, failed: number }> {
+    logger.info('\nRunning Correctness tests...');
     let testsPassed = 0;
     let testsFailed = 0;
 

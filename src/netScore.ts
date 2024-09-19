@@ -76,7 +76,6 @@ export class NetScore extends Metrics {
         // Check if netscore is between 0 and 1
         if (this.netScore < 0 || this.netScore > 1) {
             logger.error(`NetScore out of bounds: ${this.netScore}`);
-
             logger.debug(`BusFactor: ${this.busFactor.busFactor}`);
             logger.debug(`Correctness: ${this.correctness.correctness}`);
             logger.debug(`RampUp: ${this.rampUp.rampUp}`);
@@ -137,6 +136,7 @@ export class NetScore extends Metrics {
  * @returns A promise that resolves to an object with the number of tests passed and failed.
  */
 export async function NetScoreTest(): Promise<{ passed: number, failed: number }> {
+    logger.info('\nRunning Net Score tests...');
     let testsPassed = 0;
     let testsFailed = 0;
     let netScores: NetScore[] = [];
