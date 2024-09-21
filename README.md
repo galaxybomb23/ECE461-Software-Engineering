@@ -31,6 +31,10 @@ Rushil Shah
 
 ## Description
 
+### Purpose
+
+The purpose of this repository/project is to have a fair and comprehensive evaluation of other repositories/libraries/dependences/projects/etc... for which the evaluation is numerical and objective. 
+
 ### ACME Module Evaluator CLI
 
 This repository contains a command-line tool designed to help ACME Corporation’s service engineering teams evaluate and select reliable open-source Node.js modules. The tool analyzes each module based on key metrics such as ramp-up time, correctness, bus factor, maintainer responsiveness, and license compatibility. Results are output in NDJSON format with detailed scores and latencies for each metric.
