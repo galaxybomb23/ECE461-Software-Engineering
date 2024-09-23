@@ -97,7 +97,7 @@ export class NetScore extends Metrics {
 
         // Calculate the net score
         // If any metric is -1 then netscore is 0
-        if (this.busFactor.busFactor == -1 || this.correctness.correctness == -1 || this.license.license == -1 || this.rampUp.rampUp == -1 || this.maintainability.maintainability == -1) {
+        if (this.busFactor.busFactor == -1 || this.correctness.correctness == -1 || this.license.license == -1 || this.rampUp.rampUp == -1 || this.maintainability.maintainability == -1 || this.license.license == 0) {
             this.netScore = 0;
             return this.netScore;
         }
@@ -106,6 +106,7 @@ export class NetScore extends Metrics {
             for (let i = 0; i < this.weights.length; i++) {
                 this.netScore += this.weights[i] * [this.busFactor.busFactor, this.correctness.correctness, this.rampUp.rampUp, this.maintainability.maintainability][i] / 100;
             }
+            
         }
 
         // Check if netscore is between 0 and 1
